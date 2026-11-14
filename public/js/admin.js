@@ -49,7 +49,6 @@ async function masuk() {
     simpanPw(password);
     $('#masuk').hidden = true;
     $('#panel').hidden = false;
-    muatPreset();
   } catch (e) {
     $('#masuk-status').textContent = e.message;
   }
@@ -63,30 +62,6 @@ async function muatKode() {
     return h('tr', {}, h('td', {}, h('code', {}, k.kode)), h('td', {}, String(k.sisa)), h('td', {}, kadaluarsa ? `${tgl(k.kedaluwarsa)} (lewat)` : tgl(k.kedaluwarsa)), h('td', {}, k.catatan || ''));
   }));
   if (!d.kode.length) tb.append(h('tr', {}, h('td', { colspan: '4' }, 'Belum ada kode.')));
-}
-
-async function muatPreset() {
-  const tb = $('#daftar-preset');
-  try {
-    const d = await api('/api/admin/preset');
-    tb.replaceChildren(...d.preset.map((p) => h('tr', {},
-      h('td', {}, p.nama, p.alasan.length ? h('ul', { class: 'contoh' }, p.alasan.map((a) => h('li', {}, a))) : null),
-      h('td', {}, String(p.jumlah_laporan)),
-      h('td', {}, h('button', { class: 'tombol kecil' + (p.tampil ? ' sekunder' : ''), type: 'button', onclick: () => ubahPreset(p.id, !p.tampil) }, p.tampil ? 'Sembunyikan' : 'Tampilkan')),
-    )));
-    if (!d.preset.length) tb.append(h('tr', {}, h('td', { colspan: '3' }, 'Belum ada preset.')));
-  } catch (e) {
-    tb.replaceChildren(h('tr', {}, h('td', { colspan: '3' }, e.message)));
-  }
-}
-
-async function ubahPreset(id, tampil) {
-  try {
-    await api('/api/admin/preset', { method: 'POST', body: JSON.stringify({ id, tampil }) });
-    muatPreset();
-  } catch (e) {
-    alert(e.message);
-  }
 }
 
 let pesanWa = '';
@@ -132,7 +107,6 @@ $('#form-kode').addEventListener('submit', buatKode);
 $('#salin-wa').addEventListener('click', () => salin(pesanWa));
 $('#salin-kode').addEventListener('click', () => salin($('#kode-baru').textContent));
 $('#muat-kode').addEventListener('click', () => muatKode().catch((e) => alert(e.message)));
-$('#muat-preset').addEventListener('click', muatPreset);
 $('#keluar').addEventListener('click', () => keluar(''));
 
 if (password) masuk();

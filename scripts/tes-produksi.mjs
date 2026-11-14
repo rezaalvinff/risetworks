@@ -30,8 +30,6 @@ cek('admin.html noindex', /noindex/.test(admin.headers.get('x-robots-tag') || ''
 const vendor = await req('/vendor/jszip.min.js');
 cek('vendor cache panjang', /immutable/.test(vendor.headers.get('cache-control') || ''));
 
-const preset = await req('/api/preset');
-cek('/api/preset 200', preset.status === 200 && Array.isArray(preset.data?.preset), `${preset.data?.preset?.length ?? '?'} preset`);
 
 cek('/api/cron/harian tanpa secret 401', (await req('/api/cron/harian')).status === 401);
 const cron = await req('/api/cron/harian', { headers: { authorization: `Bearer ${CRON_SECRET}` } });
@@ -50,8 +48,8 @@ const t3 = await req('/api/kode', { method: 'POST', body: JSON.stringify({ kode:
 cek('kode tidak ada 404', t3.status === 404);
 const daftar = await req('/api/admin/kode', { headers: { authorization: `Bearer ${ADMIN_PASSWORD}` } });
 cek('daftar kode admin', daftar.status === 200 && Array.isArray(daftar.data?.kode));
-const ap = await req('/api/admin/preset', { headers: { authorization: `Bearer ${ADMIN_PASSWORD}` } });
-cek('daftar preset admin', ap.status === 200 && Array.isArray(ap.data?.preset));
+const ai = await req('/api/admin/cek-ai', { headers: { authorization: `Bearer ${ADMIN_PASSWORD}` } });
+cek('cek AI admin', ai.status === 200 && ai.data?.ok === true, `model ${ai.data?.uji?.model || '-'}`);
 
 if (process.env.LEWATI_AI !== '1') {
   const teks = `--- Halaman 1 ---
@@ -61,15 +59,9 @@ Huruf Times New Roman ukuran 12. Spasi 2. Teks rata kanan kiri. Paragraf baru me
 --- Halaman 2 ---
 Judul bab ditulis huruf kapital, tebal, di tengah, ukuran 14. Setiap bab dimulai di halaman baru.`;
   const hash = createHash('sha256').update(randomBytes(16)).digest('hex');
-  const ai = await req('/api/baca-pedoman', { method: 'POST', body: JSON.stringify({ hash, teks, simpanPublik: false, namaFile: 'tes-otomatis.pdf' }) });
-  const a = ai.data?.aturan || {};
-  cek('/api/baca-pedoman membaca teks contoh', ai.status === 200 && a.margin?.kiri === 4 && a.ukuran === 12 && a.spasi === 2, `status ${ai.status}, model ${ai.data?.model || '-'}, ${ai.data?.error || JSON.stringify({ margin: a.margin, font: a.font, ukuran: a.ukuran, spasi: a.spasi })}`);
-  if (ai.status === 200) {
-    const lagi = await req('/api/baca-pedoman', { method: 'POST', body: JSON.stringify({ hash, teks, simpanPublik: false }) });
-    cek('baca ulang memakai cache', lagi.status === 200 && lagi.data.dariCache === true);
-    const byId = await req(`/api/preset?id=${hash}`);
-    cek('/api/preset?id menemukan cache', byId.status === 200);
-  }
+  const bp = await req('/api/baca-pedoman', { method: 'POST', body: JSON.stringify({ hash, teks, namaFile: 'tes-otomatis.pdf' }) });
+  const a = bp.data?.aturan || {};
+  cek('/api/baca-pedoman membaca teks contoh', bp.status === 200 && a.margin?.kiri === 4 && a.ukuran === 12 && a.spasi === 2, `status ${bp.status}, model ${bp.data?.model || '-'}, ${bp.data?.error || JSON.stringify({ margin: a.margin, font: a.font, ukuran: a.ukuran, spasi: a.spasi })}`);
 }
 
 console.log(gagal ? `\n${gagal} tes gagal` : '\nSemua tes lulus');

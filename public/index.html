@@ -48,37 +48,6 @@
     <section class="kartu kartu-utama" aria-labelledby="judul-cek">
       <h2 id="judul-cek" class="sr">Cek format</h2>
 
-      <div class="pedoman">
-        <span class="pedoman-ikon" aria-hidden="true"><svg><use href="#i-buku"/></svg></span>
-        <div class="pedoman-teks">
-          <span class="label">Pedoman</span>
-          <p id="nama-pedoman" class="nama-pedoman">Pedoman umum</p>
-          <p id="ringkas-aturan" class="ringkas"></p>
-        </div>
-        <button type="button" id="ganti-pedoman" class="tombol-kecil" aria-expanded="false" aria-controls="panel-cari">Ganti</button>
-      </div>
-
-      <div id="panel-cari" class="panel-cari" hidden>
-        <label for="cari-pedoman" class="sr">Cari pedoman kampus</label>
-        <div class="kotak-cari">
-          <svg aria-hidden="true"><use href="#i-cari"/></svg>
-          <input id="cari-pedoman" type="search" role="combobox" autocomplete="off" placeholder="Ketik nama kampus, mis. unpad" aria-autocomplete="list" aria-controls="hasil-cari" aria-expanded="false">
-        </div>
-        <ul id="hasil-cari" class="hasil-cari" role="listbox" hidden></ul>
-      </div>
-
-      <div class="lapor-baris">
-        <button type="button" id="lapor-buka" class="tautan kecil" hidden><svg aria-hidden="true"><use href="#i-bendera"/></svg>Aturan pedoman ini salah?</button>
-      </div>
-      <form id="lapor-form" class="lapor" hidden>
-        <label for="lapor-alasan" class="kecil">Apa yang salah? (misalnya: margin kiri harusnya 4 cm)</label>
-        <textarea id="lapor-alasan" rows="2" maxlength="300"></textarea>
-        <div class="baris">
-          <button type="submit" class="tombol kecil">Kirim laporan</button>
-          <button type="button" id="lapor-batal" class="tautan kecil">Batal</button>
-        </div>
-      </form>
-
       <label id="dropzone" class="dropzone" for="file-docx">
         <span class="dz-ikon" aria-hidden="true"><svg><use href="#i-upload"/></svg></span>
         <span class="dz-judul">Pilih file skripsi (.docx)</span>
@@ -87,31 +56,46 @@
       </label>
       <input id="file-docx" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="sr">
 
+      <div class="slot-grid">
+        <div class="slot" id="slot-pedoman">
+          <label class="slot-pilih" for="file-pedoman">
+            <span class="slot-ikon" aria-hidden="true"><svg><use href="#i-buku"/></svg></span>
+            <span class="slot-teks">
+              <span class="slot-judul">PDF pedoman kampus</span>
+              <span id="slot-pedoman-sub" class="slot-sub">Kosongkan untuk memakai pedoman umum</span>
+            </span>
+            <span class="slot-aksi" id="slot-pedoman-aksi">Pilih</span>
+          </label>
+          <input id="file-pedoman" type="file" accept=".pdf,application/pdf" class="sr">
+        </div>
+        <div class="slot" id="slot-pdf">
+          <label class="slot-pilih" for="file-pdf-skripsi">
+            <span class="slot-ikon" aria-hidden="true"><svg><use href="#i-file"/></svg></span>
+            <span class="slot-teks">
+              <span class="slot-judul">PDF skripsi</span>
+              <span id="info-pdf-skripsi" class="slot-sub">Supaya lokasi temuan sesuai nomor halaman</span>
+            </span>
+            <span class="slot-aksi" id="slot-pdf-aksi">Pilih</span>
+          </label>
+          <input id="file-pdf-skripsi" type="file" accept=".pdf,application/pdf" class="sr">
+        </div>
+      </div>
+
+      <div class="pedoman">
+        <span class="pedoman-ikon" aria-hidden="true"><svg><use href="#i-cek"/></svg></span>
+        <div class="pedoman-teks">
+          <span class="label">Aturan yang dipakai</span>
+          <p id="nama-pedoman" class="nama-pedoman">Pedoman umum</p>
+          <p id="ringkas-aturan" class="ringkas"></p>
+        </div>
+        <button type="button" id="pakai-umum" class="tombol-kecil" hidden>Pakai umum</button>
+      </div>
       <div id="status" class="status" role="status" aria-live="polite" hidden>
         <div class="status-baris"><span class="putar" aria-hidden="true"></span><span id="status-teks"></span></div>
         <div class="bar" aria-hidden="true"><span></span></div>
       </div>
       <div id="pesan" class="pesan" role="alert" hidden></div>
 
-      <details id="opsional" class="opsional">
-        <summary><span>Opsional: nomor halaman pasti &amp; pedoman kampus sendiri</span><svg class="chevron" aria-hidden="true"><use href="#i-panah"/></svg></summary>
-        <div class="opsi-grid">
-          <div class="opsi">
-            <p class="opsi-judul">PDF skripsi</p>
-            <p class="kecil redup">Simpan file yang sama sebagai PDF (File → Save As → PDF) supaya lokasi temuan sesuai nomor halaman.</p>
-            <label class="pilih-file" for="file-pdf-skripsi"><svg aria-hidden="true"><use href="#i-file"/></svg>Pilih PDF skripsi</label>
-            <input id="file-pdf-skripsi" type="file" accept=".pdf,application/pdf" class="sr">
-            <p id="info-pdf-skripsi" class="kecil info"></p>
-          </div>
-          <div class="opsi">
-            <p class="opsi-judul">PDF pedoman kampus</p>
-            <p class="kecil redup">Kampus Anda belum ada di daftar? Upload PDF pedomannya, aturannya dibaca otomatis.</p>
-            <label class="pilih-file" for="file-pedoman"><svg aria-hidden="true"><use href="#i-buku"/></svg>Pilih PDF pedoman</label>
-            <input id="file-pedoman" type="file" accept=".pdf,application/pdf" class="sr">
-            <label class="centang kecil"><input id="simpan-publik" type="checkbox" checked><span>Bagikan aturannya supaya teman satu kampus bisa langsung pakai. Yang dibagikan hanya aturan format, bukan skripsi Anda.</span></label>
-          </div>
-        </div>
-      </details>
     </section>
 
     <section id="hasil" class="hasil" hidden aria-labelledby="judul-hasil">
@@ -164,8 +148,8 @@
     <section id="cara" class="cara" aria-labelledby="judul-cara">
       <h2 id="judul-cara">Cara kerja</h2>
       <ol class="langkah">
-        <li><span class="angka">1</span><div><strong>Pilih pedoman</strong><p>Pakai pedoman umum, cari kampus Anda, atau upload PDF pedoman sendiri.</p></div></li>
-        <li><span class="angka">2</span><div><strong>Pilih file .docx</strong><p>Pemeriksaan langsung berjalan di HP atau laptop Anda.</p></div></li>
+        <li><span class="angka">1</span><div><strong>Pilih file .docx</strong><p>Pemeriksaan langsung berjalan di HP atau laptop Anda.</p></div></li>
+        <li><span class="angka">2</span><div><strong>Tambah pedoman kampus</strong><p>Upload PDF pedoman kampus, atau biarkan kosong untuk memakai pedoman umum.</p></div></li>
         <li><span class="angka">3</span><div><strong>Perbaiki</strong><p>Ikuti petunjuknya sendiri, atau serahkan ke tim kami lewat WhatsApp.</p></div></li>
       </ol>
       <div class="fitur">
@@ -176,7 +160,7 @@
       <div class="faq">
         <details><summary>Apakah file saya disimpan?</summary><p>Tidak. File diperiksa di browser Anda sendiri dan tidak dikirim ke mana pun. Lihat <a href="/privasi.html">kebijakan privasi</a>.</p></details>
         <details><summary>File saya masih .doc atau PDF?</summary><p>Buka di Microsoft Word, lalu pilih File → Save As → Word Document (.docx).</p></details>
-        <details><summary>Kampus saya tidak ada di daftar?</summary><p>Buka bagian Opsional, lalu upload PDF pedoman kampus. Aturannya dibaca otomatis dalam 10 sampai 30 detik.</p></details>
+        <details><summary>Kampus saya punya pedoman sendiri?</summary><p>Upload PDF pedoman kampus di kotak "PDF pedoman kampus". Aturannya dibaca otomatis dalam 10 sampai 30 detik dan tidak disimpan.</p></details>
       </div>
     </section>
   </main>

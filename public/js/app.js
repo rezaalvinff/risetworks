@@ -8,7 +8,7 @@ const MB = 1024 * 1024;
 const state = {
   presetId: 'umum',
   aturan: PRESET_UMUM,
-  daftarPreset: [],
+  pedomanSesi: new Map(), // pedoman yang sudah dibaca di tab ini (tidak disimpan di mana pun)
   namaFile: '',
   bufferDocx: null,
   laporan: null,
@@ -37,8 +37,6 @@ function ramah(pesan) {
   return e;
 }
 
-const simpanLokal = (k, v) => { try { localStorage.setItem(k, v); } catch { /* abaikan */ } };
-const ambilLokal = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
 
 const rupiah = (n) => 'Rp' + Math.round(n).toLocaleString('id-ID');
 
@@ -130,121 +128,25 @@ function perbaruiWa() {
   );
 }
 
-// ---------- pedoman / preset ----------
+// ---------- pedoman ----------
 
 function tampilkanPedoman() {
   const a = state.aturan;
-  $('#nama-pedoman').textContent = a.nama || 'Pedoman tanpa nama';
+  const umum = state.presetId === 'umum';
+  $('#nama-pedoman').textContent = umum ? 'Pedoman umum' : (a.nama || 'Pedoman kampus');
   $('#ringkas-aturan').textContent = ringkasAturan(a);
-  $('#lapor-buka').hidden = state.presetId === 'umum';
-  $('#lapor-form').hidden = true;
+  $('#pakai-umum').hidden = umum;
+  $('#slot-pedoman').classList.toggle('terisi', !umum);
+  $('#slot-pedoman-aksi').textContent = umum ? 'Pilih' : 'Ganti';
+  if (umum) $('#slot-pedoman-sub').textContent = 'Kosongkan untuk memakai pedoman umum';
 }
 
 function terapkanAturan(id, aturan) {
   state.presetId = id;
   state.aturan = id === 'umum' ? PRESET_UMUM : aturan;
-  simpanLokal('rw-preset', id);
   tampilkanPedoman();
   perbaruiWa();
   if (state.bufferDocx) jalankanCek();
-}
-
-async function pilihPreset(id, nama, diam = false) {
-  if (id === 'umum') return terapkanAturan('umum', PRESET_UMUM);
-  if (!diam) status(`Memuat pedoman ${nama || ''}…`);
-  try {
-    const r = await api(`/api/preset?id=${encodeURIComponent(id)}`);
-    if (!r.ok) throw ramah(r.data.error || 'Pedoman ini tidak bisa dimuat. Pakai pedoman umum dulu.');
-    status('');
-    terapkanAturan(r.data.id, r.data.aturan);
-  } catch (e) {
-    status('');
-    if (diam) simpanLokal('rw-preset', 'umum');
-    else tanganiGalat(e, 'Pedoman ini tidak bisa dimuat. Pakai pedoman umum dulu.');
-  }
-}
-
-async function muatDaftarPreset() {
-  try {
-    const r = await api('/api/preset');
-    if (r.ok && Array.isArray(r.data.preset)) state.daftarPreset = r.data.preset;
-  } catch { /* daftar kosong, preset umum tetap jalan */ }
-}
-
-const normal = (s) => String(s || '').toLowerCase().normalize('NFKD').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
-
-let pilihanAktif = -1;
-function tampilkanHasilCari() {
-  const q = normal($('#cari-pedoman').value);
-  const ul = $('#hasil-cari');
-  ul.replaceChildren();
-  pilihanAktif = -1;
-  const token = q.split(' ').filter(Boolean);
-  const cocok = state.daftarPreset.filter((p) => {
-    const hay = normal(`${p.nama} ${p.cari || ''}`);
-    return token.every((t) => hay.includes(t));
-  }).slice(0, 8);
-  const opsi = [];
-  if (!q || 'pedoman umum'.includes(q) || 'umum'.startsWith(q)) opsi.push({ id: 'umum', nama: PRESET_UMUM.nama });
-  opsi.push(...cocok);
-  for (const [k, p] of opsi.entries()) {
-    ul.append(h('li', { role: 'option', id: `opsi-${k}`, 'data-id': p.id, onmousedown: (ev) => { ev.preventDefault(); pilih(p); } },
-      p.nama, p.kampus ? h('small', {}, p.kampus) : p.id === 'umum' ? h('small', {}, 'TNR 12 · spasi 1,5 · margin 4-4-3-3 · cocok untuk kebanyakan kampus') : null));
-  }
-  if (!opsi.length || (q && !cocok.length)) {
-    ul.append(h('li', { class: 'kosong' }, 'Belum ada di daftar. ',
-      h('button', { type: 'button', class: 'tautan', onmousedown: (ev) => { ev.preventDefault(); bukaUploadPedoman(); } }, 'Upload PDF pedoman kampus Anda')));
-  }
-  ul.hidden = false;
-  $('#cari-pedoman').setAttribute('aria-expanded', 'true');
-}
-
-function bukaPanelCari(buka) {
-  $('#panel-cari').hidden = !buka;
-  $('#ganti-pedoman').setAttribute('aria-expanded', String(buka));
-  $('#ganti-pedoman').textContent = buka ? 'Tutup' : 'Ganti';
-  if (buka) { $('#cari-pedoman').focus(); tampilkanHasilCari(); }
-}
-
-function tutupCari() {
-  $('#hasil-cari').hidden = true;
-  $('#cari-pedoman').setAttribute('aria-expanded', 'false');
-}
-
-function pilih(p) {
-  $('#cari-pedoman').value = '';
-  tutupCari();
-  bukaPanelCari(false);
-  pilihPreset(p.id, p.nama);
-}
-
-function bukaUploadPedoman() {
-  tutupCari();
-  bukaPanelCari(false);
-  $('#opsional').open = true;
-  $('#file-pedoman').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  $('#file-pedoman').focus();
-}
-
-function pasangCari() {
-  const input = $('#cari-pedoman');
-  input.addEventListener('input', tampilkanHasilCari);
-  input.addEventListener('focus', tampilkanHasilCari);
-  input.addEventListener('blur', () => setTimeout(tutupCari, 150));
-  input.addEventListener('keydown', (e) => {
-    const item = [...$('#hasil-cari').querySelectorAll('li[role="option"]')];
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (!item.length) return;
-      pilihanAktif = (pilihanAktif + (e.key === 'ArrowDown' ? 1 : -1) + item.length) % item.length;
-      item.forEach((li, k) => li.setAttribute('aria-selected', k === pilihanAktif ? 'true' : 'false'));
-      input.setAttribute('aria-activedescendant', item[pilihanAktif].id);
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      const li = item[pilihanAktif >= 0 ? pilihanAktif : 0];
-      if (li) li.dispatchEvent(new MouseEvent('mousedown'));
-    } else if (e.key === 'Escape') tutupCari();
-  });
 }
 
 // ---------- baca PDF pedoman (5.1) ----------
@@ -253,22 +155,21 @@ async function prosesPedoman(file) {
   pesan('');
   if (!/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') return pesan('Pedoman harus berupa file PDF.', 'galat');
   if (file.size > 15 * MB) return pesan('PDF pedoman maksimal 15 MB. Pakai pedoman umum dulu atau kirim pedomannya lewat WhatsApp.', 'galat');
-  const simpanPublik = $('#simpan-publik').checked;
   try {
     status('Membaca pedoman…');
     const buf = await file.arrayBuffer();
     const hash = await sha256(buf);
-    const ada = await api(`/api/preset?id=${hash}`);
-    if (ada.ok && ada.data.aturan) {
+    $('#slot-pedoman-sub').textContent = file.name;
+    if (state.pedomanSesi.has(hash)) {
       status('');
-      terapkanAturan(ada.data.id, ada.data.aturan);
-      pesan('Pedoman ini sudah pernah dibaca, aturannya langsung dipakai.', 'sukses');
+      terapkanAturan(hash, state.pedomanSesi.get(hash));
+      pesan('Aturan pedoman ini sudah dibaca tadi, langsung dipakai.', 'sukses');
       return;
     }
     const { bacaTeksPdf, gabungDenganPenanda } = await import('./pagemap.js');
     const halaman = await bacaTeksPdf(buf, { onProgres: (n, t) => status(`Membaca pedoman… halaman ${n} dari ${t}`) });
     const jumlahHuruf = halaman.join('').replace(/\s/g, '').length;
-    const body = { hash, simpanPublik, namaFile: file.name.slice(0, 120) };
+    const body = { hash, namaFile: file.name.slice(0, 120) };
     if (jumlahHuruf < 500 && halaman.length > 2) {
       if (file.size > 3 * MB) throw ramah('Pedoman ini berupa hasil scan dan terlalu besar. Pakai preset umum atau kirim pedomannya lewat WhatsApp.');
       body.pdfBase64 = await keBase64(buf);
@@ -279,14 +180,14 @@ async function prosesPedoman(file) {
     const r = await api('/api/baca-pedoman', { method: 'POST', body: JSON.stringify(body) }, 75000);
     status('');
     if (!r.ok) throw ramah(r.data.error || 'Pedoman belum bisa dibaca otomatis, pakai preset umum dulu atau kirim pedoman lewat WhatsApp.');
-    terapkanAturan(r.data.id, r.data.aturan);
-    await muatDaftarPreset();
-    pesan(r.data.publik
-      ? 'Aturan pedoman berhasil dibaca dan dibagikan untuk teman satu kampus. Cek ringkasan aturan di atas.'
-      : 'Aturan pedoman berhasil dibaca. Cek ringkasan aturan di atas, kalau ada yang keliru tekan "Laporkan pedoman ini salah".', 'sukses');
+    state.pedomanSesi.set(hash, r.data.aturan);
+    terapkanAturan(hash, r.data.aturan);
+    $('#slot-pedoman-sub').textContent = file.name;
+    pesan('Aturan pedoman berhasil dibaca. Cek ringkasannya di bawah kotak upload, pastikan sesuai dengan pedoman Anda.', 'sukses');
   } catch (e) {
     status('');
-    tanganiGalat(e, 'Pedoman belum bisa dibaca otomatis, pakai preset umum dulu atau kirim pedoman lewat WhatsApp.');
+    tampilkanPedoman();
+    tanganiGalat(e, 'Pedoman belum bisa dibaca otomatis, pakai pedoman umum dulu atau kirim pedoman lewat WhatsApp.');
   }
 }
 
@@ -297,13 +198,12 @@ async function pilihDocx(file) {
   if (!file) return;
   const nama = file.name || '';
   if (/\.doc$/i.test(nama)) return pesan('File harus .docx. Kalau masih .doc, buka di Word lalu Save As .docx.', 'galat');
-  if (/\.pdf$/i.test(nama)) return pesan('Yang dicek harus file Word (.docx), bukan PDF. PDF skripsi bisa ditambahkan di bagian Opsional untuk nomor halaman.', 'galat');
+  if (/\.pdf$/i.test(nama)) return pesan('Yang dicek harus file Word (.docx), bukan PDF. PDF skripsi bisa ditambahkan di kotak "PDF skripsi" untuk nomor halaman.', 'galat');
   if (!/\.docx$/i.test(nama)) return pesan('File harus .docx. Kalau masih .doc, buka di Word lalu Save As .docx.', 'galat');
   if (file.size > 60 * MB) return pesan('File terlalu besar (lebih dari 60 MB). Kompres gambar di Word (File → Compress Pictures) lalu coba lagi.', 'galat');
   state.namaFile = nama;
   state.bufferDocx = await file.arrayBuffer();
   state.halamanPdf = null;
-  if (state.halamanPdfTeks) $('#info-pdf-skripsi').textContent = 'PDF skripsi sebelumnya akan dicocokkan lagi dengan file ini.';
   $('#dz-sub').textContent = `${nama} · ketuk untuk ganti file`;
   $('#dropzone').classList.add('terisi');
   $('#dropzone .dz-judul').textContent = 'File terpilih';
@@ -337,7 +237,7 @@ async function cocokkanPdf() {
   state.halamanPdf = petakanHalaman(state.halamanPdfTeks, state.laporan.paragrafTeks);
   const cocok = state.halamanPdf.filter(Boolean).length;
   $('#info-pdf-skripsi').textContent = cocok
-    ? `PDF dicocokkan: ${state.halamanPdfTeks.length} halaman.`
+    ? `${state.namaPdf} · cocok, ${state.halamanPdfTeks.length} halaman`
     : 'PDF tidak cocok dengan file .docx. Pastikan PDF dibuat dari file yang sama.';
   if (!cocok) state.halamanPdf = null;
 }
@@ -350,7 +250,10 @@ async function prosesPdfSkripsi(file) {
     const { bacaTeksPdf } = await import('./pagemap.js');
     state.halamanPdfTeks = await bacaTeksPdf(await file.arrayBuffer(), { onProgres: (n, t) => status(`Membaca PDF skripsi… halaman ${n} dari ${t}`) });
     status('');
-    $('#info-pdf-skripsi').textContent = `PDF terbaca: ${state.halamanPdfTeks.length} halaman.`;
+    state.namaPdf = file.name;
+    $('#info-pdf-skripsi').textContent = `${file.name} · ${state.halamanPdfTeks.length} halaman`;
+    $('#slot-pdf').classList.add('terisi');
+    $('#slot-pdf-aksi').textContent = 'Ganti';
     if (state.laporan) { await cocokkanPdf(); tampilkanHasil(); }
   } catch (e) {
     status('');
@@ -419,7 +322,7 @@ function tampilkanHasil() {
 
   $('#info-halaman').textContent = state.halamanPdf
     ? 'Nomor halaman diambil dari PDF skripsi (urutan halaman di file PDF).'
-    : 'Nomor halaman bertanda ± adalah perkiraan. Untuk nomor pasti, tambahkan PDF skripsi di bagian Opsional.';
+    : 'Nomor halaman bertanda ± adalah perkiraan. Untuk nomor pasti, tambahkan PDF skripsi di kotak "PDF skripsi" di atas.';
 
   const detail = $('#detail');
   detail.replaceChildren();
@@ -495,22 +398,6 @@ async function tebusKode(ev) {
   }
 }
 
-// ---------- lapor preset ----------
-
-async function kirimLaporan(ev) {
-  ev.preventDefault();
-  const alasan = $('#lapor-alasan').value.trim();
-  try {
-    const r = await api('/api/lapor-preset', { method: 'POST', body: JSON.stringify({ id: state.presetId, alasan }) });
-    if (!r.ok) throw ramah(r.data.error || 'Laporan gagal dikirim. Coba lagi nanti.');
-    $('#lapor-form').hidden = true;
-    $('#lapor-alasan').value = '';
-    pesan('Terima kasih, laporan diterima. Pedoman yang dilaporkan beberapa orang akan disembunyikan otomatis.', 'sukses');
-  } catch (e) {
-    tanganiGalat(e, 'Laporan gagal dikirim. Coba lagi nanti.');
-  }
-}
-
 // ---------- pasang ----------
 
 function pasangDropzone() {
@@ -531,27 +418,24 @@ function pasangInputFile(sel, fn) {
   });
 }
 
-async function mulai() {
+function pasangSlot(sel, input, fn) {
+  const el = $(sel);
+  ['dragenter', 'dragover'].forEach((t) => el.addEventListener(t, (e) => { e.preventDefault(); e.stopPropagation(); el.classList.add('seret'); }));
+  ['dragleave', 'drop'].forEach((t) => el.addEventListener(t, (e) => { e.preventDefault(); e.stopPropagation(); el.classList.remove('seret'); }));
+  el.addEventListener('drop', (e) => { const f = e.dataTransfer.files[0]; if (f) fn(f); });
+  pasangInputFile(input, fn);
+}
+
+function mulai() {
   tampilkanPedoman();
   perbaruiWa();
   pasangDropzone();
-  pasangCari();
   pasangInputFile('#file-docx', pilihDocx);
-  pasangInputFile('#file-pdf-skripsi', prosesPdfSkripsi);
-  pasangInputFile('#file-pedoman', prosesPedoman);
+  pasangSlot('#slot-pdf', '#file-pdf-skripsi', prosesPdfSkripsi);
+  pasangSlot('#slot-pedoman', '#file-pedoman', prosesPedoman);
   $('#cek-ulang').addEventListener('click', jalankanCek);
-  $('#ganti-pedoman').addEventListener('click', () => bukaPanelCari($('#panel-cari').hidden));
+  $('#pakai-umum').addEventListener('click', () => { terapkanAturan('umum', PRESET_UMUM); pesan(''); });
   $('#kode-form').addEventListener('submit', tebusKode);
-  $('#lapor-buka').addEventListener('click', () => { $('#lapor-form').hidden = false; $('#lapor-alasan').focus(); });
-  $('#lapor-batal').addEventListener('click', () => { $('#lapor-form').hidden = true; });
-  $('#lapor-form').addEventListener('submit', kirimLaporan);
-
-  await muatDaftarPreset();
-  const terakhir = ambilLokal('rw-preset');
-  if (terakhir && terakhir !== 'umum' && /^[a-f0-9]{64}$/.test(terakhir) && !state.bufferDocx) {
-    const p = state.daftarPreset.find((x) => x.id === terakhir);
-    pilihPreset(terakhir, p ? p.nama : '', true);
-  }
 }
 
 mulai();
