@@ -15,27 +15,23 @@ Browser pengguna
 
 Vercel
   ├─ public/                 hosting statis
-  ├─ /api/baca-pedoman       teks pedoman → Gemini → aturan → Supabase
-  ├─ /api/preset             daftar & detail preset
+  ├─ /api/baca-pedoman       teks pedoman → Gemini → aturan (tidak disimpan)
   ├─ /api/kode               tebus kode premium (atomik di Postgres)
-  ├─ /api/lapor-preset       laporkan preset salah (2 laporan → otomatis disembunyikan)
   ├─ /api/admin/kode         buat & lihat kode (password admin, maks 5 salah/jam/IP)
-  ├─ /api/admin/preset       lihat preset & laporannya, sembunyikan/tampilkan
   ├─ /api/admin/cek-ai       diagnosa Gemini: key valid? model apa yang tersedia?
   └─ /api/cron/harian        1x sehari 02.00 WIB: query nyata supaya Supabase tidak pause + bersih data lama
 
-Supabase: tabel preset, cache_pedoman, kode_premium, rate_limit, laporan_preset
+Supabase: tabel kode_premium dan rate_limit (tabel preset, cache_pedoman, laporan_preset dari versi awal tidak dipakai lagi)
 ```
 
-**File skripsi tidak pernah dikirim ke server.** Yang dikirim hanya teks pedoman kampus (atau PDF pedoman hasil scan ≤ 3 MB), kode premium, dan laporan preset. Lihat `public/privasi.html`.
+**File skripsi tidak pernah dikirim ke server.** Yang dikirim hanya teks pedoman kampus (atau PDF pedoman hasil scan ≤ 3 MB) untuk dibaca AI tanpa disimpan, dan kode premium. Lihat `public/privasi.html`.
 
 ### Alur baca pedoman
 
-1. Browser menghitung SHA-256 PDF pedoman, lalu `GET /api/preset?id=<hash>`. Kalau sudah pernah dibaca, langsung dipakai (tanpa AI).
-2. Kalau belum, PDF.js mengekstrak teks per halaman (`--- Halaman N ---`), maksimal 3,5 MB, lalu dikirim ke `/api/baca-pedoman`.
-3. PDF hasil scan (teks < 500 huruf untuk PDF > 2 halaman): kalau ≤ 3 MB dikirim sebagai base64 supaya Gemini membaca langsung; kalau lebih besar, pengguna diarahkan ke preset umum/WhatsApp.
-4. Server: cek cache → rate limit per IP (`BATAS_HARIAN`) → Gemini (model cadangan otomatis) → `rapikanAturan` → validasi otomatis → simpan.
-5. Validasi otomatis sebelum preset tampil publik: margin 1–6 cm, huruf 9–16 pt, spasi 1–3, minimal 5 dari 7 kolom utama terisi, nama tidak kosong. Tidak lolos → hanya disimpan di `cache_pedoman` (tetap bisa dipakai pengunggahnya).
+1. Pengguna memilih PDF pedoman kampus. PDF.js mengekstrak teks per halaman (`--- Halaman N ---`), maksimal 3,5 MB, lalu dikirim ke `/api/baca-pedoman`.
+2. PDF hasil scan (teks < 500 huruf untuk PDF > 2 halaman): kalau ≤ 3 MB dikirim sebagai base64 supaya Gemini membaca langsung; kalau lebih besar, pengguna diarahkan ke pedoman umum/WhatsApp.
+3. Server: rate limit per IP (`BATAS_HARIAN`) → Gemini (model cadangan otomatis) → `rapikanAturan` → aturan dikembalikan ke browser. **Tidak ada yang disimpan.**
+4. Browser mengingat aturan pedoman itu selama tab terbuka, jadi memilih PDF yang sama lagi tidak memanggil AI ulang.
 
 ## Struktur
 
@@ -74,7 +70,6 @@ Buka `/admin.html`, masukkan `ADMIN_PASSWORD` (tersimpan selama tab terbuka).
 
 - **Buat kode**: isi jumlah pemakaian, masa berlaku, catatan pembeli → tekan *Salin pesan WA* → tempel di chat pembeli.
 - **Kode terakhir**: 50 kode terbaru dengan sisa pemakaian.
-- **Preset pedoman**: preset yang dilaporkan (beserta alasannya) di urutan atas. Tombol sembunyikan/tampilkan. Menampilkan lagi akan mengosongkan hitungan laporan.
 
 **Cek AI (Gemini)**: buka `/api/admin/cek-ai` dengan header `Authorization: Bearer <ADMIN_PASSWORD>`. Hasilnya menunjukkan apakah API key valid, model apa yang tersedia, dan saran isi `GEMINI_MODEL`. Kalau semua model di `GEMINI_MODEL` sudah dihapus Google, server otomatis mencari model Flash yang tersedia lewat `models.list`.
 
