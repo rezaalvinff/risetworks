@@ -5,7 +5,7 @@
   "description": "Cek format skripsi/makalah .docx di browser, dengan API di Vercel dan database Supabase.",
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": "22.x"
   },
   "scripts": {
     "test": "node --test tests/*.test.mjs",

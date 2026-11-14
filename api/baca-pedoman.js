@@ -44,7 +44,7 @@ export async function POST(request) {
   } catch (e) {
     console.error('baca-pedoman ai', e.kode, e.message);
     if (e.kode === 'kuota') return galat('Kuota AI sedang penuh, coba beberapa menit lagi.', 429);
-    return galat(PESAN_GAGAL, 502);
+    return galat(PESAN_GAGAL, 502, { detail: e.kode || 'tidak diketahui' });
   }
   const aturan = rapikanAturan(hasil.data);
   const m = aturan.margin;

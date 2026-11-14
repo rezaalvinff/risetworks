@@ -21,6 +21,7 @@ Vercel
   ├─ /api/lapor-preset       laporkan preset salah (2 laporan → otomatis disembunyikan)
   ├─ /api/admin/kode         buat & lihat kode (password admin, maks 5 salah/jam/IP)
   ├─ /api/admin/preset       lihat preset & laporannya, sembunyikan/tampilkan
+  ├─ /api/admin/cek-ai       diagnosa Gemini: key valid? model apa yang tersedia?
   └─ /api/cron/harian        1x sehari 02.00 WIB: query nyata supaya Supabase tidak pause + bersih data lama
 
 Supabase: tabel preset, cache_pedoman, kode_premium, rate_limit, laporan_preset
@@ -74,6 +75,8 @@ Buka `/admin.html`, masukkan `ADMIN_PASSWORD` (tersimpan selama tab terbuka).
 - **Buat kode**: isi jumlah pemakaian, masa berlaku, catatan pembeli → tekan *Salin pesan WA* → tempel di chat pembeli.
 - **Kode terakhir**: 50 kode terbaru dengan sisa pemakaian.
 - **Preset pedoman**: preset yang dilaporkan (beserta alasannya) di urutan atas. Tombol sembunyikan/tampilkan. Menampilkan lagi akan mengosongkan hitungan laporan.
+
+**Cek AI (Gemini)**: buka `/api/admin/cek-ai` dengan header `Authorization: Bearer <ADMIN_PASSWORD>`. Hasilnya menunjukkan apakah API key valid, model apa yang tersedia, dan saran isi `GEMINI_MODEL`. Kalau semua model di `GEMINI_MODEL` sudah dihapus Google, server otomatis mencari model Flash yang tersedia lewat `models.list`.
 
 Kode yang kedaluwarsa disimpan 30 hari lagi (supaya pembeli mendapat pesan "kedaluwarsa", bukan "tidak ditemukan"), lalu dihapus otomatis oleh cron.
 
