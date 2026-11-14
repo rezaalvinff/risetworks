@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>RISETWORKS · Cek Format Skripsi</title>
+  <meta name="description" content="Cek format skripsi, makalah, dan artikel (.docx) sesuai pedoman kampus. Gratis, tanpa daftar, file tidak dikirim ke server.">
+  <meta name="theme-color" content="#0f5132">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/vendor/jszip.min.js" defer></script>
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <header class="kepala">
+    <div class="wadah">
+      <a class="merek" href="/">RISETWORKS</a>
+      <p class="tagline">Cek format skripsi sesuai pedoman kampus. Gratis, tanpa daftar.</p>
+    </div>
+  </header>
+
+  <main class="wadah">
+    <section class="kartu" aria-labelledby="judul-pedoman">
+      <h2 id="judul-pedoman" class="label">Pedoman yang dipakai</h2>
+      <div class="pedoman-aktif">
+        <p id="nama-pedoman" class="nama-pedoman">Pedoman umum</p>
+        <p id="ringkas-aturan" class="kecil redup"></p>
+        <button type="button" id="lapor-buka" class="tautan kecil" hidden>Laporkan pedoman ini salah</button>
+      </div>
+      <form id="lapor-form" class="lapor" hidden>
+        <label for="lapor-alasan" class="kecil">Apa yang salah? (misalnya: margin kiri harusnya 4 cm)</label>
+        <textarea id="lapor-alasan" rows="2" maxlength="300"></textarea>
+        <div class="baris">
+          <button type="submit" class="tombol kecil">Kirim laporan</button>
+          <button type="button" id="lapor-batal" class="tautan kecil">Batal</button>
+        </div>
+      </form>
+      <div class="cari">
+        <label for="cari-pedoman" class="kecil">Ganti pedoman kampus</label>
+        <input id="cari-pedoman" type="search" role="combobox" autocomplete="off" placeholder="Cari kampus, mis. unpad" aria-autocomplete="list" aria-controls="hasil-cari" aria-expanded="false">
+        <ul id="hasil-cari" class="hasil-cari" role="listbox" hidden></ul>
+      </div>
+    </section>
+
+    <section class="kartu" aria-labelledby="judul-file">
+      <h2 id="judul-file" class="sr">File skripsi</h2>
+      <label id="dropzone" class="dropzone" for="file-docx">
+        <svg class="ikon-upload" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24"/><path d="M24 13l8 8h-5v9h-6v-9h-5l8-8zM15 33h18v4H15z" fill="#fff"/></svg>
+        <span class="dz-judul">Pilih file skripsi (.docx)</span>
+        <span id="dz-sub" class="dz-sub">Ketuk untuk memilih, atau seret file ke sini</span>
+      </label>
+      <input id="file-docx" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="sr">
+      <p class="kecil redup privasi-singkat">File diperiksa langsung di HP/laptop Anda dan <strong>tidak dikirim ke server</strong>.</p>
+
+      <details id="opsional" class="opsional">
+        <summary>Opsional: nomor halaman pasti &amp; pedoman sendiri</summary>
+        <div class="opsi">
+          <label for="file-pdf-skripsi" class="label-opsi">PDF skripsi</label>
+          <p class="kecil redup">Simpan file yang sama sebagai PDF (File → Save As → PDF), lalu pilih di sini supaya lokasi temuan sesuai nomor halaman.</p>
+          <input id="file-pdf-skripsi" type="file" accept=".pdf,application/pdf">
+          <p id="info-pdf-skripsi" class="kecil"></p>
+        </div>
+        <div class="opsi">
+          <label for="file-pedoman" class="label-opsi">PDF pedoman kampus</label>
+          <p class="kecil redup">Kampus Anda belum ada di daftar? Upload PDF pedoman penulisan, aturannya dibaca otomatis.</p>
+          <input id="file-pedoman" type="file" accept=".pdf,application/pdf">
+          <label class="centang kecil"><input id="simpan-publik" type="checkbox" checked> Bagikan aturan pedoman ini supaya teman satu kampus bisa langsung memakainya. (Yang dibagikan hanya aturan format dari pedoman, bukan skripsi Anda.)</label>
+        </div>
+      </details>
+    </section>
+
+    <div id="status" class="status" role="status" aria-live="polite" hidden>
+      <span class="putar" aria-hidden="true"></span>
+      <span id="status-teks"></span>
+    </div>
+    <div id="pesan" class="pesan" role="alert" hidden></div>
+
+    <section id="hasil" class="hasil" hidden aria-labelledby="judul-hasil">
+      <div class="kartu skor-kartu">
+        <h2 id="judul-hasil" class="sr">Hasil pemeriksaan</h2>
+        <div class="skor-baris">
+          <div id="skor-lingkar" class="skor-lingkar"><span id="skor">0</span><small>/100</small></div>
+          <div>
+            <p id="skor-label" class="skor-label"></p>
+            <p id="skor-ringkas" class="kecil"></p>
+          </div>
+        </div>
+        <h3 class="sub">Yang paling perlu diperbaiki</h3>
+        <ol id="temuan-utama" class="temuan-utama"></ol>
+        <p id="info-halaman" class="kecil redup"></p>
+      </div>
+
+      <div class="kartu">
+        <h3 class="sub">Detail per bagian</h3>
+        <div id="detail"></div>
+        <div id="catatan-pedoman" hidden>
+          <h3 class="sub">Catatan pedoman yang perlu dicek sendiri</h3>
+          <ul id="catatan-daftar" class="kecil"></ul>
+        </div>
+      </div>
+
+      <div class="kartu premium">
+        <h3 class="sub">File bercatatan</h3>
+        <p>Dapatkan salinan file Anda dengan <strong>komentar Word di setiap bagian yang salah</strong>, lengkap dengan cara memperbaikinya. Tinggal ikuti satu per satu.</p>
+        <p class="kecil">Harga: <strong id="harga-catatan"></strong> per kode. <a id="wa-kode" href="#" target="_blank" rel="noopener">Beli kode lewat WhatsApp</a></p>
+        <form id="kode-form" class="baris">
+          <label for="kode" class="sr">Kode premium</label>
+          <input id="kode" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="Masukkan kode, mis. RW-ABCD-1234" maxlength="40">
+          <button type="submit" id="tebus" class="tombol">Buat file</button>
+        </form>
+        <p id="kode-status" class="kecil" aria-live="polite"></p>
+      </div>
+
+      <div class="baris tengah">
+        <label for="file-docx" class="tombol sekunder">Pilih file revisi</label>
+        <button type="button" id="cek-ulang" class="tombol sekunder">Cek ulang</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="wa-bar" class="wa-bar" hidden>
+    <div class="wadah wa-isi">
+      <div>
+        <strong>Mau dirapikan tim kami?</strong>
+        <span id="wa-estimasi" class="kecil"></span>
+      </div>
+      <a id="wa-rapikan" class="tombol wa" href="#" target="_blank" rel="noopener">Chat WhatsApp</a>
+    </div>
+  </div>
+
+  <footer class="kaki wadah kecil redup">
+    <p>File skripsi diperiksa di browser Anda dan tidak pernah dikirim ke server. <a href="/privasi.html">Kebijakan privasi</a></p>
+    <p>Hasil cek otomatis bisa keliru. Tetap cocokkan dengan pedoman resmi kampus.</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin RISETWORKS</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/style.css">
+  <script type="module" src="/js/admin.js"></script>
+</head>
+<body>
+  <header class="kepala"><div class="wadah"><a class="merek" href="/">RISETWORKS</a><p class="tagline">Halaman admin</p></div></header>
+  <main class="wadah">
+    <section id="masuk" class="kartu">
+      <form id="form-masuk" class="isian">
+        <label>Password admin<input id="password" type="password" autocomplete="current-password" required></label>
+        <button class="tombol" type="submit">Masuk</button>
+      </form>
+      <p id="masuk-status" class="kecil" role="alert"></p>
+    </section>
+
+    <div id="panel" hidden>
+      <section class="kartu">
+        <h2 class="sub">Buat kode premium</h2>
+        <form id="form-kode" class="isian">
+          <label>Jumlah pemakaian<input id="pakai" type="number" min="1" max="100" value="1" inputmode="numeric"></label>
+          <label>Berlaku (hari)<input id="hari" type="number" min="1" max="365" value="30" inputmode="numeric"></label>
+          <label>Catatan (nama/nomor pembeli)<input id="catatan" type="text" maxlength="200" placeholder="mis. Rina 0812xxxx, transfer BCA"></label>
+          <button class="tombol" type="submit" id="tombol-kode">Buat kode</button>
+        </form>
+        <div id="hasil-kode" hidden>
+          <p class="kode-besar" id="kode-baru"></p>
+          <p class="preformat" id="pesan-wa"></p>
+          <div class="baris">
+            <button class="tombol" type="button" id="salin-wa">Salin pesan WA</button>
+            <button class="tombol sekunder" type="button" id="salin-kode">Salin kode saja</button>
+          </div>
+          <p id="salin-status" class="kecil" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="kartu">
+        <div class="baris antara"><h2 class="sub">Kode terakhir</h2><button class="tautan kecil" id="muat-kode" type="button">Muat ulang</button></div>
+        <div class="tabel-wadah"><table><thead><tr><th>Kode</th><th>Sisa</th><th>Berlaku s.d.</th><th>Catatan</th></tr></thead><tbody id="daftar-kode"></tbody></table></div>
+      </section>
+
+      <section class="kartu">
+        <div class="baris antara"><h2 class="sub">Preset pedoman</h2><button class="tautan kecil" id="muat-preset" type="button">Muat ulang</button></div>
+        <p class="kecil redup">Preset dengan 2 laporan atau lebih otomatis disembunyikan. Tampilkan lagi kalau ternyata benar.</p>
+        <div class="tabel-wadah"><table><thead><tr><th>Pedoman</th><th>Laporan</th><th>Status</th></tr></thead><tbody id="daftar-preset"></tbody></table></div>
+      </section>
+
+      <p class="baris tengah"><button class="tautan" id="keluar" type="button">Keluar</button></p>
+    </div>
+  </main>
+</body>
+</html>
