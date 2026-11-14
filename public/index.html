@@ -24,6 +24,7 @@
     <symbol id="i-cari" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
     <symbol id="i-panah" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-wa" viewBox="0 0 24 24"><path d="M12 2.5a9.5 9.5 0 00-8.2 14.3L2.5 21.5l4.8-1.3A9.5 9.5 0 1012 2.5zm0 17.3a7.8 7.8 0 01-4-1.1l-.3-.2-2.8.8.8-2.7-.2-.3A7.8 7.8 0 1112 19.8zm4.3-5.8c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.4 6.4 0 01-3.2-2.8c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 00-.6.3 2.7 2.7 0 00-.9 2 4.7 4.7 0 001 2.5 10.7 10.7 0 004.1 3.6c1.5.7 2.1.7 2.9.6a2.4 2.4 0 001.6-1.1 2 2 0 00.1-1.1c0-.2-.2-.2-.4-.3z" fill="currentColor"/></symbol>
+    <symbol id="i-cetak" viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H5a2 2 0 01-2-2v-4a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2h-2M7 14h10v7H7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
     <symbol id="i-bendera" viewBox="0 0 24 24"><path d="M5 21V4m0 0h11l-2 4 2 4H5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-hadiah" viewBox="0 0 24 24"><path d="M4 11h16v9a1 1 0 01-1 1H5a1 1 0 01-1-1v-9zM3 7h18v4H3zM12 7v14M12 7S10.5 3 8 3.5 7 7 12 7zm0 0s1.5-4 4-3.5S17 7 12 7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
   </svg>
@@ -35,7 +36,7 @@
         <a class="nav-link" href="#cara">Cara kerja</a>
       </nav>
       <h1>Cek format skripsi<br><span>dalam hitungan detik</span></h1>
-      <p class="hero-sub">Upload file Word, langsung tahu bagian yang belum sesuai pedoman kampus beserta cara memperbaikinya.</p>
+      <p class="hero-sub">Upload skripsi dan pedoman kampus, langsung dapat laporan bagian mana yang belum sesuai beserta cara memperbaikinya.</p>
       <ul class="lencana" aria-label="Keunggulan">
         <li><svg><use href="#i-cek"/></svg>Gratis</li>
         <li><svg><use href="#i-orang"/></svg>Tanpa daftar</li>
@@ -46,61 +47,57 @@
 
   <main class="wadah utama">
     <section class="kartu kartu-utama" aria-labelledby="judul-cek">
-      <h2 id="judul-cek" class="sr">Cek format</h2>
-
-      <label id="dropzone" class="dropzone" for="file-docx">
-        <span class="dz-ikon" aria-hidden="true"><svg><use href="#i-upload"/></svg></span>
-        <span class="dz-judul">Pilih file skripsi (.docx)</span>
-        <span id="dz-sub" class="dz-sub">Ketuk di sini, atau seret file ke kotak ini</span>
-        <span class="dz-tombol" aria-hidden="true">Pilih file</span>
-      </label>
-      <input id="file-docx" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="sr">
-
-      <div class="slot-grid">
-        <div class="slot" id="slot-pedoman">
-          <label class="slot-pilih" for="file-pedoman">
-            <span class="slot-ikon" aria-hidden="true"><svg><use href="#i-buku"/></svg></span>
-            <span class="slot-teks">
-              <span class="slot-judul">PDF pedoman kampus</span>
-              <span id="slot-pedoman-sub" class="slot-sub">Kosongkan untuk memakai pedoman umum</span>
-            </span>
-            <span class="slot-aksi" id="slot-pedoman-aksi">Pilih</span>
+      <h2 id="judul-cek" class="sr">Upload file</h2>
+      <div class="unggah-grid">
+        <div class="unggah" id="unggah-skripsi">
+          <label class="unggah-kotak" for="file-skripsi">
+            <span class="unggah-nomor" aria-hidden="true">1</span>
+            <span class="dz-ikon" aria-hidden="true"><svg><use href="#i-file"/></svg></span>
+            <span class="unggah-judul">File skripsi</span>
+            <span class="unggah-sub" id="sub-skripsi">Word (.docx) atau PDF</span>
+            <span class="dz-tombol" id="aksi-skripsi">Pilih file</span>
           </label>
-          <input id="file-pedoman" type="file" accept=".pdf,application/pdf" class="sr">
+          <input id="file-skripsi" type="file" accept=".docx,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="sr">
         </div>
-        <div class="slot" id="slot-pdf">
-          <label class="slot-pilih" for="file-pdf-skripsi">
-            <span class="slot-ikon" aria-hidden="true"><svg><use href="#i-file"/></svg></span>
-            <span class="slot-teks">
-              <span class="slot-judul">PDF skripsi</span>
-              <span id="info-pdf-skripsi" class="slot-sub">Supaya lokasi temuan sesuai nomor halaman</span>
-            </span>
-            <span class="slot-aksi" id="slot-pdf-aksi">Pilih</span>
+        <div class="unggah" id="unggah-pedoman">
+          <label class="unggah-kotak" for="file-pedoman">
+            <span class="unggah-nomor" aria-hidden="true">2</span>
+            <span class="dz-ikon" aria-hidden="true"><svg><use href="#i-buku"/></svg></span>
+            <span class="unggah-judul">File pedoman kampus</span>
+            <span class="unggah-sub" id="sub-pedoman">Word (.docx) atau PDF</span>
+            <span class="dz-tombol" id="aksi-pedoman">Pilih file</span>
           </label>
-          <input id="file-pdf-skripsi" type="file" accept=".pdf,application/pdf" class="sr">
+          <input id="file-pedoman" type="file" accept=".docx,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="sr">
         </div>
       </div>
+      <p class="petunjuk kecil">Seret file ke kotaknya, atau ketuk untuk memilih. Pengecekan berjalan otomatis setelah kedua file dipilih.</p>
 
-      <div class="pedoman">
+      <div id="aturan-kotak" class="pedoman" hidden>
         <span class="pedoman-ikon" aria-hidden="true"><svg><use href="#i-cek"/></svg></span>
         <div class="pedoman-teks">
-          <span class="label">Aturan yang dipakai</span>
-          <p id="nama-pedoman" class="nama-pedoman">Pedoman umum</p>
+          <span class="label">Aturan dari pedoman</span>
+          <p id="nama-pedoman" class="nama-pedoman"></p>
           <p id="ringkas-aturan" class="ringkas"></p>
         </div>
-        <button type="button" id="pakai-umum" class="tombol-kecil" hidden>Pakai umum</button>
       </div>
+
       <div id="status" class="status" role="status" aria-live="polite" hidden>
         <div class="status-baris"><span class="putar" aria-hidden="true"></span><span id="status-teks"></span></div>
         <div class="bar" aria-hidden="true"><span></span></div>
       </div>
       <div id="pesan" class="pesan" role="alert" hidden></div>
-
     </section>
 
     <section id="hasil" class="hasil" hidden aria-labelledby="judul-hasil">
-      <div class="kartu skor-kartu">
-        <h2 id="judul-hasil" class="sr">Hasil pemeriksaan</h2>
+      <div class="kartu laporan-kepala">
+        <div class="laporan-atas">
+          <div>
+            <p class="label">RISETWORKS</p>
+            <h2 id="judul-hasil" class="laporan-judul">Laporan format</h2>
+          </div>
+          <button type="button" id="cetak" class="tombol-kecil cetak-sembunyi"><svg aria-hidden="true"><use href="#i-cetak"/></svg>Simpan</button>
+        </div>
+        <p id="laporan-meta" class="laporan-meta"></p>
         <div class="skor-atas">
           <div id="skor-lingkar" class="skor-lingkar" role="img" aria-label="Skor format">
             <div class="skor-isi"><span id="skor">0</span><small>dari 100</small></div>
@@ -111,7 +108,24 @@
             <div id="ringkas-tingkat" class="ringkas-tingkat"></div>
           </div>
         </div>
+        <div id="statistik" class="statistik"></div>
+      </div>
 
+      <div class="kartu">
+        <h3 class="sub">Pedoman vs skripsi Anda</h3>
+        <ul id="banding" class="banding"></ul>
+        <p id="info-ukur" class="kecil redup"></p>
+      </div>
+
+      <div class="kartu" id="peta-kartu">
+        <h3 class="sub">Peta halaman</h3>
+        <p id="peta-info" class="kecil redup"></p>
+        <div id="peta" class="peta" role="list"></div>
+        <div class="legenda kecil"><span><i class="l0"></i>Bersih</span><span><i class="l1"></i>1</span><span><i class="l2"></i>2</span><span><i class="l3"></i>3+</span></div>
+        <div id="peta-detail" class="peta-detail" aria-live="polite" hidden></div>
+      </div>
+
+      <div class="kartu">
         <h3 class="sub">Perbaiki ini dulu</h3>
         <ol id="temuan-utama" class="temuan-utama"></ol>
         <p id="info-halaman" class="kecil redup info-halaman"></p>
@@ -126,10 +140,11 @@
         </div>
       </div>
 
-      <div class="kartu premium">
+      <div class="kartu premium cetak-sembunyi">
         <span class="premium-ikon" aria-hidden="true"><svg><use href="#i-hadiah"/></svg></span>
         <h3>File bercatatan</h3>
-        <p>Dapat salinan file Anda dengan <strong>komentar Word di setiap bagian yang salah</strong>, lengkap dengan cara memperbaikinya. Tinggal ikuti satu per satu.</p>
+        <p>Dapat salinan file Word Anda dengan <strong>komentar di setiap bagian yang salah</strong>, lengkap dengan cara memperbaikinya. Tinggal ikuti satu per satu.</p>
+        <p id="premium-pdf" class="premium-catatan" hidden>Fitur ini butuh file skripsi dalam format Word (.docx). Upload file .docx-nya untuk memakai kode.</p>
         <p class="harga"><strong id="harga-catatan"></strong> per kode · <a id="wa-kode" href="#" target="_blank" rel="noopener">Beli kode lewat WhatsApp</a></p>
         <form id="kode-form" class="kode-form">
           <label for="kode" class="sr">Kode premium</label>
@@ -139,8 +154,8 @@
         <p id="kode-status" class="kode-status" aria-live="polite"></p>
       </div>
 
-      <div class="aksi-ulang">
-        <label for="file-docx" class="tombol garis">Pilih file revisi</label>
+      <div class="aksi-ulang cetak-sembunyi">
+        <label for="file-skripsi" class="tombol garis">Pilih file revisi</label>
         <button type="button" id="cek-ulang" class="tombol garis">Cek ulang</button>
       </div>
     </section>
@@ -148,9 +163,9 @@
     <section id="cara" class="cara" aria-labelledby="judul-cara">
       <h2 id="judul-cara">Cara kerja</h2>
       <ol class="langkah">
-        <li><span class="angka">1</span><div><strong>Pilih file .docx</strong><p>Pemeriksaan langsung berjalan di HP atau laptop Anda.</p></div></li>
-        <li><span class="angka">2</span><div><strong>Tambah pedoman kampus</strong><p>Upload PDF pedoman kampus, atau biarkan kosong untuk memakai pedoman umum.</p></div></li>
-        <li><span class="angka">3</span><div><strong>Perbaiki</strong><p>Ikuti petunjuknya sendiri, atau serahkan ke tim kami lewat WhatsApp.</p></div></li>
+        <li><span class="angka">1</span><div><strong>Upload skripsi</strong><p>File Word (.docx) atau PDF. Diperiksa langsung di HP atau laptop Anda.</p></div></li>
+        <li><span class="angka">2</span><div><strong>Upload pedoman kampus</strong><p>Word atau PDF. Aturan formatnya dibaca otomatis oleh AI.</p></div></li>
+        <li><span class="angka">3</span><div><strong>Baca laporannya</strong><p>Skor, perbandingan dengan pedoman, peta halaman, dan cara memperbaiki.</p></div></li>
       </ol>
       <div class="fitur">
         <div><svg aria-hidden="true"><use href="#i-kunci"/></svg><strong>Privasi terjaga</strong><p>Skripsi tidak pernah diunggah ke server.</p></div>
@@ -159,8 +174,8 @@
       </div>
       <div class="faq">
         <details><summary>Apakah file saya disimpan?</summary><p>Tidak. File diperiksa di browser Anda sendiri dan tidak dikirim ke mana pun. Lihat <a href="/privasi.html">kebijakan privasi</a>.</p></details>
-        <details><summary>File saya masih .doc atau PDF?</summary><p>Buka di Microsoft Word, lalu pilih File → Save As → Word Document (.docx).</p></details>
-        <details><summary>Kampus saya punya pedoman sendiri?</summary><p>Upload PDF pedoman kampus di kotak "PDF pedoman kampus". Aturannya dibaca otomatis dalam 10 sampai 30 detik dan tidak disimpan.</p></details>
+        <details><summary>Lebih baik upload Word atau PDF?</summary><p>Keduanya bisa. File Word (.docx) diperiksa lebih lengkap (termasuk track changes, spasi ganda, dan posisi judul tabel) dan bisa dibuatkan file bercatatan. File .doc lama: buka di Word lalu Save As .docx.</p></details>
+        <details><summary>Pedoman saya disimpan?</summary><p>Tidak. Isi pedoman hanya dibaca AI untuk diambil aturan formatnya (10 sampai 30 detik), lalu tidak disimpan.</p></details>
       </div>
     </section>
   </main>

@@ -1,6 +1,6 @@
 # RISETWORKS v2
 
-Web cek format skripsi, makalah, dan artikel (.docx) sesuai pedoman kampus. Mahasiswa memilih file, hasil cek langsung muncul (skor, temuan terpenting, cara memperbaiki), lalu bisa order jasa rapikan lewat WhatsApp. Fitur premium **file bercatatan** (komentar Word di setiap temuan) dibuka dengan kode.
+Web cek format skripsi, makalah, dan artikel sesuai pedoman kampus. Mahasiswa mengupload **file skripsi** (Word .docx atau PDF) dan **file pedoman kampus** (Word .docx atau PDF). AI membaca aturan dari pedoman, lalu laporan langsung muncul: skor, tabel "Pedoman vs skripsi Anda", peta halaman, temuan terpenting, dan cara memperbaiki. Laporan bisa disimpan sebagai PDF, dan pengguna bisa order jasa rapikan lewat WhatsApp. Fitur premium **file bercatatan** (komentar Word di setiap temuan) dibuka dengan kode.
 
 Jalan di **Vercel (Hobby) + Supabase (Free) + Gemini API (free tier)**. Biaya Rp0.
 
@@ -9,8 +9,8 @@ Jalan di **Vercel (Hobby) + Supabase (Free) + Gemini API (free tier)**. Biaya Rp
 ```
 Browser pengguna
   ├─ cek format .docx (public/js/checker.js)           → lokal, tanpa server
-  ├─ cocokkan halaman dari PDF skripsi (pagemap.js)     → lokal, tanpa server
-  ├─ ekstrak teks PDF pedoman (PDF.js)                  → lokal, lalu teksnya dikirim ke API
+  ├─ cek format PDF (public/js/checker-pdf.js)          → lokal, ukur posisi teks dengan PDF.js
+  ├─ ekstrak teks pedoman Word/PDF                      → lokal, lalu teksnya dikirim ke API
   └─ buat file bercatatan (annotate.js)                 → lokal, setelah kode premium valid
 
 Vercel
@@ -26,9 +26,13 @@ Supabase: tabel kode_premium dan rate_limit (tabel preset, cache_pedoman, lapora
 
 **File skripsi tidak pernah dikirim ke server.** Yang dikirim hanya teks pedoman kampus (atau PDF pedoman hasil scan ≤ 3 MB) untuk dibaca AI tanpa disimpan, dan kode premium. Lihat `public/privasi.html`.
 
+### Cek skripsi PDF
+
+`checker-pdf.js` mengukur dari posisi teks: ukuran kertas, margin (kiri/kanan dari tepi blok teks, atas/bawah diperkirakan dari baris pertama/terakhir), jenis huruf (nama font tertanam; font pengganti yang ukurannya identik seperti Liberation Serif dianggap Times New Roman), ukuran huruf, spasi (jarak antarbaris), rata kanan-kiri, indent, judul bab, bab di halaman baru, dan nomor halaman. Yang hanya bisa dicek dari Word: track changes, komentar, spasi ganda, Enter berulang, posisi judul tabel/gambar, warna teks, jarak antarparagraf. File bercatatan juga hanya untuk .docx.
+
 ### Alur baca pedoman
 
-1. Pengguna memilih PDF pedoman kampus. PDF.js mengekstrak teks per halaman (`--- Halaman N ---`), maksimal 3,5 MB, lalu dikirim ke `/api/baca-pedoman`.
+1. Pengguna memilih file pedoman. Untuk PDF, PDF.js mengekstrak teks per halaman (`--- Halaman N ---`); untuk Word, teks paragraf diambil dari `word/document.xml`. Maksimal 3,5 MB teks dikirim ke `/api/baca-pedoman`.
 2. PDF hasil scan (teks < 500 huruf untuk PDF > 2 halaman): kalau ≤ 3 MB dikirim sebagai base64 supaya Gemini membaca langsung; kalau lebih besar, pengguna diarahkan ke pedoman umum/WhatsApp.
 3. Server: rate limit per IP (`BATAS_HARIAN`) → Gemini (model cadangan otomatis) → `rapikanAturan` → aturan dikembalikan ke browser. **Tidak ada yang disimpan.**
 4. Browser mengingat aturan pedoman itu selama tab terbuka, jadi memilih PDF yang sama lagi tidak memanggil AI ulang.

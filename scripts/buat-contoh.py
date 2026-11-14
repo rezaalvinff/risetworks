@@ -2,10 +2,10 @@
 
 Hasil di folder contoh/:
   1-skripsi-banyak-salah.docx   format bawaan Word, banyak kesalahan
-  1-skripsi-banyak-salah.pdf    PDF dari file yang sama (untuk fitur nomor halaman pasti)
-  2-skripsi-hampir-rapi.docx    beberapa kesalahan kecil
-  3-skripsi-rapi.docx           sesuai pedoman umum (skor 100)
-  4-pedoman-univ-nusantara-raya.pdf  pedoman kampus fiktif untuk mencoba fitur baca pedoman (AI)
+  1-skripsi-banyak-salah.pdf    versi PDF dari file yang sama
+  2-skripsi-hampir-rapi.docx/.pdf  beberapa kesalahan kecil
+  3-skripsi-rapi.docx/.pdf      sesuai pedoman umum (TNR 12, spasi 1,5, margin 4-4-3-3)
+  4-pedoman-univ-nusantara-raya.docx/.pdf  pedoman kampus fiktif (Word dan PDF)
 
 Pakai: python3 scripts/buat-contoh.py  (butuh python-docx, Pillow, LibreOffice untuk PDF)
 """
@@ -355,10 +355,11 @@ if __name__ == '__main__':
     skripsi_banyak_salah(os.path.join(OUT, '1-skripsi-banyak-salah.docx'))
     ke_pdf(os.path.join(OUT, '1-skripsi-banyak-salah.docx'))
     skripsi_rapi(os.path.join(OUT, '2-skripsi-hampir-rapi.docx'), {'kiri': 3, 'spasi_satu': [4, 5, 10], 'tanpa_break': 'BAB III', 'spasi_ganda': [6]})
+    ke_pdf(os.path.join(OUT, '2-skripsi-hampir-rapi.docx'))
     skripsi_rapi(os.path.join(OUT, '3-skripsi-rapi.docx'))
-    pedoman(os.path.join(OUT, '_pedoman.docx'))
-    ke_pdf(os.path.join(OUT, '_pedoman.docx'))
-    os.replace(os.path.join(OUT, '_pedoman.pdf'), os.path.join(OUT, '4-pedoman-univ-nusantara-raya.pdf'))
-    for f in ('_pedoman.docx', '_grafik.png'):
+    ke_pdf(os.path.join(OUT, '3-skripsi-rapi.docx'))
+    pedoman(os.path.join(OUT, '4-pedoman-univ-nusantara-raya.docx'))
+    ke_pdf(os.path.join(OUT, '4-pedoman-univ-nusantara-raya.docx'))
+    for f in ('_grafik.png',):
         os.remove(os.path.join(OUT, f))
     print('\n'.join(sorted(os.listdir(OUT))))
