@@ -47,3 +47,32 @@ test('util', () => {
   assert.match(waktuWib().jam, /^\d{4}-\d{2}-\d{2}T\d{2}$/);
   assert.match(buatPrompt({ dariTeks: true }), /--- Halaman N ---/);
 });
+
+test('semua model hilang: model dicari otomatis lewat models.list', async () => {
+  process.env.GEMINI_MODEL = 'lama-1,lama-2';
+  const dipanggil = [];
+  const fetchFn = async (url) => {
+    dipanggil.push(url.replace(/^.*\/models/, ''));
+    if (url.includes('/models?')) {
+      return resp(200, { models: [
+        { name: 'models/gemini-9.0-flash', supportedGenerationMethods: ['generateContent'] },
+        { name: 'models/gemini-9.0-flash-lite', supportedGenerationMethods: ['generateContent'] },
+        { name: 'models/gemini-9.0-flash-image', supportedGenerationMethods: ['generateContent'] },
+        { name: 'models/text-embedding-9', supportedGenerationMethods: ['embedContent'] },
+      ] });
+    }
+    if (url.includes('lama-')) return resp(404, { error: { message: 'not found' } });
+    return jawab({ nama: 'Z' });
+  };
+  const r = await tanyaGemini({ prompt: 'p', teks: 't', fetchFn });
+  assert.equal(r.model, 'gemini-9.0-flash-lite');
+  assert.ok(dipanggil.some((u) => u.startsWith('?')));
+});
+
+test('API key salah dilaporkan sebagai kunci', async () => {
+  process.env.GEMINI_MODEL = 'a,b';
+  await assert.rejects(
+    tanyaGemini({ prompt: 'p', teks: 't', fetchFn: async () => resp(400, { error: { message: 'API key not valid. Please pass a valid API key.' } }) }),
+    (e) => e.kode === 'kunci',
+  );
+});
