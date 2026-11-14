@@ -189,7 +189,7 @@ function tampilkanHasilCari() {
   opsi.push(...cocok);
   for (const [k, p] of opsi.entries()) {
     ul.append(h('li', { role: 'option', id: `opsi-${k}`, 'data-id': p.id, onmousedown: (ev) => { ev.preventDefault(); pilih(p); } },
-      p.nama, p.kampus ? h('small', {}, p.kampus) : null));
+      p.nama, p.kampus ? h('small', {}, p.kampus) : p.id === 'umum' ? h('small', {}, 'TNR 12 · spasi 1,5 · margin 4-4-3-3 · cocok untuk kebanyakan kampus') : null));
   }
   if (!opsi.length || (q && !cocok.length)) {
     ul.append(h('li', { class: 'kosong' }, 'Belum ada di daftar. ',
@@ -197,6 +197,13 @@ function tampilkanHasilCari() {
   }
   ul.hidden = false;
   $('#cari-pedoman').setAttribute('aria-expanded', 'true');
+}
+
+function bukaPanelCari(buka) {
+  $('#panel-cari').hidden = !buka;
+  $('#ganti-pedoman').setAttribute('aria-expanded', String(buka));
+  $('#ganti-pedoman').textContent = buka ? 'Tutup' : 'Ganti';
+  if (buka) { $('#cari-pedoman').focus(); tampilkanHasilCari(); }
 }
 
 function tutupCari() {
@@ -207,12 +214,13 @@ function tutupCari() {
 function pilih(p) {
   $('#cari-pedoman').value = '';
   tutupCari();
-  $('#cari-pedoman').blur();
+  bukaPanelCari(false);
   pilihPreset(p.id, p.nama);
 }
 
 function bukaUploadPedoman() {
   tutupCari();
+  bukaPanelCari(false);
   $('#opsional').open = true;
   $('#file-pedoman').scrollIntoView({ behavior: 'smooth', block: 'center' });
   $('#file-pedoman').focus();
@@ -297,6 +305,9 @@ async function pilihDocx(file) {
   state.halamanPdf = null;
   if (state.halamanPdfTeks) $('#info-pdf-skripsi').textContent = 'PDF skripsi sebelumnya akan dicocokkan lagi dengan file ini.';
   $('#dz-sub').textContent = `${nama} · ketuk untuk ganti file`;
+  $('#dropzone').classList.add('terisi');
+  $('#dropzone .dz-judul').textContent = 'File terpilih';
+  $('#dropzone .dz-tombol').textContent = 'Ganti file';
   jalankanCek();
 }
 
@@ -358,38 +369,66 @@ function labelLokasi(t) {
   return `Halaman ${tampil}${hal.length > 6 ? ` dan ${hal.length - 6} halaman lain` : ''}`;
 }
 
+const KATEGORI = [
+  ['Halaman', 'A4'], ['Huruf', 'Aa'], ['Paragraf', '¶'], ['Judul', 'H1'], ['Tabel & Gambar', '▦'], ['Lainnya', '⋯'],
+];
+const LABEL_TINGKAT = { berat: 'Penting', sedang: 'Sedang', ringan: 'Ringan' };
+
+function animasiSkor(target) {
+  const el = $('#skor');
+  const lingkar = $('#skor-lingkar');
+  const mulai = performance.now();
+  const durasi = 900;
+  const langkah = (t) => {
+    const k = Math.min(1, (t - mulai) / durasi);
+    const v = Math.round(target * (1 - Math.pow(1 - k, 3)));
+    el.textContent = v;
+    lingkar.style.setProperty('--nilai', v);
+    if (k < 1) requestAnimationFrame(langkah);
+  };
+  requestAnimationFrame(langkah);
+}
+
 function tampilkanHasil() {
   const L = state.laporan;
   $('#hasil').hidden = false;
   const lingkar = $('#skor-lingkar');
-  lingkar.className = 'skor-lingkar' + (L.skor >= 80 ? '' : L.skor >= 50 ? ' sedang' : ' rendah');
-  $('#skor').textContent = L.skor;
+  lingkar.className = 'skor-lingkar ' + (L.skor >= 80 ? 'tinggi' : L.skor >= 50 ? 'sedang' : 'rendah');
+  lingkar.setAttribute('aria-label', `Skor format ${L.skor} dari 100`);
+  animasiSkor(L.skor);
   $('#skor-label').textContent = L.skor >= 90 ? 'Sudah rapi' : L.skor >= 70 ? 'Hampir rapi' : L.skor >= 40 ? 'Perlu dirapikan' : 'Banyak yang perlu dirapikan';
-  const penting = L.temuan.filter((t) => t.tingkat !== 'ringan').length;
   $('#skor-ringkas').textContent = L.temuan.length
-    ? `Ada ${L.temuan.length} hal yang perlu diperbaiki${penting ? `, ${penting} di antaranya penting` : ''}.`
-    : 'Tidak ada temuan. Format sudah sesuai pedoman yang dipilih.';
+    ? `${L.temuan.length} hal perlu diperbaiki sesuai ${state.presetId === 'umum' ? 'pedoman umum' : 'pedoman kampus'}.`
+    : 'Format sudah sesuai pedoman yang dipilih.';
+  const hitung = { berat: 0, sedang: 0, ringan: 0 };
+  for (const t of L.temuan) hitung[t.tingkat]++;
+  $('#ringkas-tingkat').replaceChildren(...(L.temuan.length
+    ? Object.entries(hitung).filter(([, n]) => n).map(([k, n]) => h('span', { class: `chip ${k}` }, `${n} ${LABEL_TINGKAT[k].toLowerCase()}`))
+    : [h('span', { class: 'chip ok' }, 'Semua lolos')]));
 
   const ol = $('#temuan-utama');
   ol.replaceChildren();
   for (const t of L.temuan.slice(0, 3)) {
-    ol.append(h('li', {}, h('strong', {}, t.judul), t.pesan, h('span', { class: 'lokasi' }, labelLokasi(t))));
+    ol.append(h('li', {},
+      h('strong', {}, t.judul),
+      h('p', {}, t.pesan),
+      h('p', { class: 'cara' }, h('b', {}, 'Cara: '), t.saran),
+      h('span', { class: 'lokasi' }, labelLokasi(t))));
   }
-  if (!L.temuan.length) ol.append(h('li', {}, 'Semua pemeriksaan lolos. Tetap baca ulang naskah sebelum dicetak.'));
+  if (!L.temuan.length) ol.append(h('li', { class: 'semua-ok' }, 'Semua pemeriksaan lolos. Tetap baca ulang naskah sebelum dicetak.'));
 
   $('#info-halaman').textContent = state.halamanPdf
     ? 'Nomor halaman diambil dari PDF skripsi (urutan halaman di file PDF).'
     : 'Nomor halaman bertanda ± adalah perkiraan. Untuk nomor pasti, tambahkan PDF skripsi di bagian Opsional.';
 
-  const KATEGORI = ['Halaman', 'Huruf', 'Paragraf', 'Judul', 'Tabel & Gambar', 'Lainnya'];
   const detail = $('#detail');
   detail.replaceChildren();
-  for (const k of KATEGORI) {
+  for (const [k, ikon] of KATEGORI) {
     const isi = L.temuan.filter((t) => t.kategori === k);
     const ul = h('ul');
     for (const t of isi) {
       ul.append(h('li', {},
-        h('p', {}, h('span', { class: `tingkat ${t.tingkat}` }, t.tingkat === 'berat' ? 'Penting' : t.tingkat === 'sedang' ? 'Sedang' : 'Ringan'), h('strong', {}, t.judul)),
+        h('p', {}, h('span', { class: `tingkat ${t.tingkat}` }, LABEL_TINGKAT[t.tingkat]), h('strong', {}, t.judul)),
         h('p', {}, t.pesan),
         h('p', { class: 'saran' }, h('strong', {}, 'Cara memperbaiki: '), t.saran),
         t.contoh && t.contoh.length ? h('ul', { class: 'contoh' }, t.contoh.map((c) => {
@@ -400,8 +439,16 @@ function tampilkanHasil() {
       ));
     }
     if (!isi.length) ul.append(h('li', {}, h('p', { class: 'kecil redup' }, 'Tidak ada temuan di bagian ini.')));
+    const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    chevron.setAttribute('class', 'chevron');
+    chevron.setAttribute('aria-hidden', 'true');
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    use.setAttribute('href', '#i-panah');
+    chevron.append(use);
     detail.append(h('details', { class: 'kategori' },
-      h('summary', {}, k, h('span', { class: 'jumlah' + (isi.length ? '' : ' nol') }, isi.length ? `${isi.length} temuan` : 'OK')),
+      h('summary', {}, h('span', { class: 'kat-ikon', 'aria-hidden': 'true' }, ikon), h('span', { class: 'kat-nama' }, k),
+        h('span', { class: 'chip ' + (isi.length ? (isi.some((t) => t.tingkat === 'berat') ? 'berat' : isi.some((t) => t.tingkat === 'sedang') ? 'sedang' : 'ringan') : 'ok') }, isi.length ? `${isi.length} temuan` : 'OK'),
+        chevron),
       ul));
   }
 
@@ -493,6 +540,7 @@ async function mulai() {
   pasangInputFile('#file-pdf-skripsi', prosesPdfSkripsi);
   pasangInputFile('#file-pedoman', prosesPedoman);
   $('#cek-ulang').addEventListener('click', jalankanCek);
+  $('#ganti-pedoman').addEventListener('click', () => bukaPanelCari($('#panel-cari').hidden));
   $('#kode-form').addEventListener('submit', tebusKode);
   $('#lapor-buka').addEventListener('click', () => { $('#lapor-form').hidden = false; $('#lapor-alasan').focus(); });
   $('#lapor-batal').addEventListener('click', () => { $('#lapor-form').hidden = true; });

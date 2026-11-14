@@ -3,29 +3,72 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>RISETWORKS · Cek Format Skripsi</title>
-  <meta name="description" content="Cek format skripsi, makalah, dan artikel (.docx) sesuai pedoman kampus. Gratis, tanpa daftar, file tidak dikirim ke server.">
-  <meta name="theme-color" content="#0f5132">
+  <title>RISETWORKS · Cek Format Skripsi Gratis</title>
+  <meta name="description" content="Cek format skripsi, makalah, dan artikel (.docx) sesuai pedoman kampus dalam hitungan detik. Gratis, tanpa daftar, file tidak dikirim ke server.">
+  <meta name="theme-color" content="#1d4ed8">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/vendor/plus-jakarta-sans.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/style.css">
   <script src="/vendor/jszip.min.js" defer></script>
   <script type="module" src="/js/app.js"></script>
 </head>
 <body>
-  <header class="kepala">
+  <svg width="0" height="0" class="sr" aria-hidden="true">
+    <symbol id="i-cek" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-kunci" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 10.5V8a3.5 3.5 0 017 0v2.5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-kilat" viewBox="0 0 24 24"><path d="M13 3L5 13.5h6L10 21l8-10.5h-6L13 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-orang" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 20c1-3.5 4-5 7-5s6 1.5 7 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M7 3h7l5 5v11a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14 3v5h5M8.5 13h7M8.5 16.5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4m0 0l-4.5 4.5M12 4l4.5 4.5M5 15v3a2 2 0 002 2h10a2 2 0 002-2v-3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-buku" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 016.5 3H20v15H6.5A2.5 2.5 0 004 20.5v-15zM4 20.5A2.5 2.5 0 006.5 23H20" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" transform="translate(0 -1)"/></symbol>
+    <symbol id="i-cari" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-panah" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-wa" viewBox="0 0 24 24"><path d="M12 2.5a9.5 9.5 0 00-8.2 14.3L2.5 21.5l4.8-1.3A9.5 9.5 0 1012 2.5zm0 17.3a7.8 7.8 0 01-4-1.1l-.3-.2-2.8.8.8-2.7-.2-.3A7.8 7.8 0 1112 19.8zm4.3-5.8c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.4 6.4 0 01-3.2-2.8c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 00-.6.3 2.7 2.7 0 00-.9 2 4.7 4.7 0 001 2.5 10.7 10.7 0 004.1 3.6c1.5.7 2.1.7 2.9.6a2.4 2.4 0 001.6-1.1 2 2 0 00.1-1.1c0-.2-.2-.2-.4-.3z" fill="currentColor"/></symbol>
+    <symbol id="i-bendera" viewBox="0 0 24 24"><path d="M5 21V4m0 0h11l-2 4 2 4H5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-hadiah" viewBox="0 0 24 24"><path d="M4 11h16v9a1 1 0 01-1 1H5a1 1 0 01-1-1v-9zM3 7h18v4H3zM12 7v14M12 7S10.5 3 8 3.5 7 7 12 7zm0 0s1.5-4 4-3.5S17 7 12 7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <header class="hero">
     <div class="wadah">
-      <a class="merek" href="/">RISETWORKS</a>
-      <p class="tagline">Cek format skripsi sesuai pedoman kampus. Gratis, tanpa daftar.</p>
+      <nav class="nav">
+        <a class="merek" href="/"><span class="logo" aria-hidden="true"><svg><use href="#i-cek"/></svg></span>RISETWORKS</a>
+        <a class="nav-link" href="#cara">Cara kerja</a>
+      </nav>
+      <h1>Cek format skripsi<br><span>dalam hitungan detik</span></h1>
+      <p class="hero-sub">Upload file Word, langsung tahu bagian yang belum sesuai pedoman kampus beserta cara memperbaikinya.</p>
+      <ul class="lencana" aria-label="Keunggulan">
+        <li><svg><use href="#i-cek"/></svg>Gratis</li>
+        <li><svg><use href="#i-orang"/></svg>Tanpa daftar</li>
+        <li><svg><use href="#i-kunci"/></svg>File tidak diunggah</li>
+      </ul>
     </div>
   </header>
 
-  <main class="wadah">
-    <section class="kartu" aria-labelledby="judul-pedoman">
-      <h2 id="judul-pedoman" class="label">Pedoman yang dipakai</h2>
-      <div class="pedoman-aktif">
-        <p id="nama-pedoman" class="nama-pedoman">Pedoman umum</p>
-        <p id="ringkas-aturan" class="kecil redup"></p>
-        <button type="button" id="lapor-buka" class="tautan kecil" hidden>Laporkan pedoman ini salah</button>
+  <main class="wadah utama">
+    <section class="kartu kartu-utama" aria-labelledby="judul-cek">
+      <h2 id="judul-cek" class="sr">Cek format</h2>
+
+      <div class="pedoman">
+        <span class="pedoman-ikon" aria-hidden="true"><svg><use href="#i-buku"/></svg></span>
+        <div class="pedoman-teks">
+          <span class="label">Pedoman</span>
+          <p id="nama-pedoman" class="nama-pedoman">Pedoman umum</p>
+          <p id="ringkas-aturan" class="ringkas"></p>
+        </div>
+        <button type="button" id="ganti-pedoman" class="tombol-kecil" aria-expanded="false" aria-controls="panel-cari">Ganti</button>
+      </div>
+
+      <div id="panel-cari" class="panel-cari" hidden>
+        <label for="cari-pedoman" class="sr">Cari pedoman kampus</label>
+        <div class="kotak-cari">
+          <svg aria-hidden="true"><use href="#i-cari"/></svg>
+          <input id="cari-pedoman" type="search" role="combobox" autocomplete="off" placeholder="Ketik nama kampus, mis. unpad" aria-autocomplete="list" aria-controls="hasil-cari" aria-expanded="false">
+        </div>
+        <ul id="hasil-cari" class="hasil-cari" role="listbox" hidden></ul>
+      </div>
+
+      <div class="lapor-baris">
+        <button type="button" id="lapor-buka" class="tautan kecil" hidden><svg aria-hidden="true"><use href="#i-bendera"/></svg>Aturan pedoman ini salah?</button>
       </div>
       <form id="lapor-form" class="lapor" hidden>
         <label for="lapor-alasan" class="kecil">Apa yang salah? (misalnya: margin kiri harusnya 4 cm)</label>
@@ -35,102 +78,124 @@
           <button type="button" id="lapor-batal" class="tautan kecil">Batal</button>
         </div>
       </form>
-      <div class="cari">
-        <label for="cari-pedoman" class="kecil">Ganti pedoman kampus</label>
-        <input id="cari-pedoman" type="search" role="combobox" autocomplete="off" placeholder="Cari kampus, mis. unpad" aria-autocomplete="list" aria-controls="hasil-cari" aria-expanded="false">
-        <ul id="hasil-cari" class="hasil-cari" role="listbox" hidden></ul>
-      </div>
-    </section>
 
-    <section class="kartu" aria-labelledby="judul-file">
-      <h2 id="judul-file" class="sr">File skripsi</h2>
       <label id="dropzone" class="dropzone" for="file-docx">
-        <svg class="ikon-upload" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24"/><path d="M24 13l8 8h-5v9h-6v-9h-5l8-8zM15 33h18v4H15z" fill="#fff"/></svg>
+        <span class="dz-ikon" aria-hidden="true"><svg><use href="#i-upload"/></svg></span>
         <span class="dz-judul">Pilih file skripsi (.docx)</span>
-        <span id="dz-sub" class="dz-sub">Ketuk untuk memilih, atau seret file ke sini</span>
+        <span id="dz-sub" class="dz-sub">Ketuk di sini, atau seret file ke kotak ini</span>
+        <span class="dz-tombol" aria-hidden="true">Pilih file</span>
       </label>
       <input id="file-docx" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="sr">
-      <p class="kecil redup privasi-singkat">File diperiksa langsung di HP/laptop Anda dan <strong>tidak dikirim ke server</strong>.</p>
+
+      <div id="status" class="status" role="status" aria-live="polite" hidden>
+        <div class="status-baris"><span class="putar" aria-hidden="true"></span><span id="status-teks"></span></div>
+        <div class="bar" aria-hidden="true"><span></span></div>
+      </div>
+      <div id="pesan" class="pesan" role="alert" hidden></div>
 
       <details id="opsional" class="opsional">
-        <summary>Opsional: nomor halaman pasti &amp; pedoman sendiri</summary>
-        <div class="opsi">
-          <label for="file-pdf-skripsi" class="label-opsi">PDF skripsi</label>
-          <p class="kecil redup">Simpan file yang sama sebagai PDF (File → Save As → PDF), lalu pilih di sini supaya lokasi temuan sesuai nomor halaman.</p>
-          <input id="file-pdf-skripsi" type="file" accept=".pdf,application/pdf">
-          <p id="info-pdf-skripsi" class="kecil"></p>
-        </div>
-        <div class="opsi">
-          <label for="file-pedoman" class="label-opsi">PDF pedoman kampus</label>
-          <p class="kecil redup">Kampus Anda belum ada di daftar? Upload PDF pedoman penulisan, aturannya dibaca otomatis.</p>
-          <input id="file-pedoman" type="file" accept=".pdf,application/pdf">
-          <label class="centang kecil"><input id="simpan-publik" type="checkbox" checked> Bagikan aturan pedoman ini supaya teman satu kampus bisa langsung memakainya. (Yang dibagikan hanya aturan format dari pedoman, bukan skripsi Anda.)</label>
+        <summary><span>Opsional: nomor halaman pasti &amp; pedoman kampus sendiri</span><svg class="chevron" aria-hidden="true"><use href="#i-panah"/></svg></summary>
+        <div class="opsi-grid">
+          <div class="opsi">
+            <p class="opsi-judul">PDF skripsi</p>
+            <p class="kecil redup">Simpan file yang sama sebagai PDF (File → Save As → PDF) supaya lokasi temuan sesuai nomor halaman.</p>
+            <label class="pilih-file" for="file-pdf-skripsi"><svg aria-hidden="true"><use href="#i-file"/></svg>Pilih PDF skripsi</label>
+            <input id="file-pdf-skripsi" type="file" accept=".pdf,application/pdf" class="sr">
+            <p id="info-pdf-skripsi" class="kecil info"></p>
+          </div>
+          <div class="opsi">
+            <p class="opsi-judul">PDF pedoman kampus</p>
+            <p class="kecil redup">Kampus Anda belum ada di daftar? Upload PDF pedomannya, aturannya dibaca otomatis.</p>
+            <label class="pilih-file" for="file-pedoman"><svg aria-hidden="true"><use href="#i-buku"/></svg>Pilih PDF pedoman</label>
+            <input id="file-pedoman" type="file" accept=".pdf,application/pdf" class="sr">
+            <label class="centang kecil"><input id="simpan-publik" type="checkbox" checked><span>Bagikan aturannya supaya teman satu kampus bisa langsung pakai. Yang dibagikan hanya aturan format, bukan skripsi Anda.</span></label>
+          </div>
         </div>
       </details>
     </section>
 
-    <div id="status" class="status" role="status" aria-live="polite" hidden>
-      <span class="putar" aria-hidden="true"></span>
-      <span id="status-teks"></span>
-    </div>
-    <div id="pesan" class="pesan" role="alert" hidden></div>
-
     <section id="hasil" class="hasil" hidden aria-labelledby="judul-hasil">
       <div class="kartu skor-kartu">
         <h2 id="judul-hasil" class="sr">Hasil pemeriksaan</h2>
-        <div class="skor-baris">
-          <div id="skor-lingkar" class="skor-lingkar"><span id="skor">0</span><small>/100</small></div>
-          <div>
+        <div class="skor-atas">
+          <div id="skor-lingkar" class="skor-lingkar" role="img" aria-label="Skor format">
+            <div class="skor-isi"><span id="skor">0</span><small>dari 100</small></div>
+          </div>
+          <div class="skor-info">
             <p id="skor-label" class="skor-label"></p>
-            <p id="skor-ringkas" class="kecil"></p>
+            <p id="skor-ringkas" class="skor-ringkas"></p>
+            <div id="ringkas-tingkat" class="ringkas-tingkat"></div>
           </div>
         </div>
-        <h3 class="sub">Yang paling perlu diperbaiki</h3>
+
+        <h3 class="sub">Perbaiki ini dulu</h3>
         <ol id="temuan-utama" class="temuan-utama"></ol>
-        <p id="info-halaman" class="kecil redup"></p>
+        <p id="info-halaman" class="kecil redup info-halaman"></p>
       </div>
 
       <div class="kartu">
-        <h3 class="sub">Detail per bagian</h3>
-        <div id="detail"></div>
-        <div id="catatan-pedoman" hidden>
-          <h3 class="sub">Catatan pedoman yang perlu dicek sendiri</h3>
+        <h3 class="sub">Semua temuan per bagian</h3>
+        <div id="detail" class="detail"></div>
+        <div id="catatan-pedoman" class="catatan-pedoman" hidden>
+          <h3 class="sub">Cek sendiri juga</h3>
           <ul id="catatan-daftar" class="kecil"></ul>
         </div>
       </div>
 
       <div class="kartu premium">
-        <h3 class="sub">File bercatatan</h3>
-        <p>Dapatkan salinan file Anda dengan <strong>komentar Word di setiap bagian yang salah</strong>, lengkap dengan cara memperbaikinya. Tinggal ikuti satu per satu.</p>
-        <p class="kecil">Harga: <strong id="harga-catatan"></strong> per kode. <a id="wa-kode" href="#" target="_blank" rel="noopener">Beli kode lewat WhatsApp</a></p>
-        <form id="kode-form" class="baris">
+        <span class="premium-ikon" aria-hidden="true"><svg><use href="#i-hadiah"/></svg></span>
+        <h3>File bercatatan</h3>
+        <p>Dapat salinan file Anda dengan <strong>komentar Word di setiap bagian yang salah</strong>, lengkap dengan cara memperbaikinya. Tinggal ikuti satu per satu.</p>
+        <p class="harga"><strong id="harga-catatan"></strong> per kode · <a id="wa-kode" href="#" target="_blank" rel="noopener">Beli kode lewat WhatsApp</a></p>
+        <form id="kode-form" class="kode-form">
           <label for="kode" class="sr">Kode premium</label>
-          <input id="kode" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="Masukkan kode, mis. RW-ABCD-1234" maxlength="40">
-          <button type="submit" id="tebus" class="tombol">Buat file</button>
+          <input id="kode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Masukkan kode, mis. RW-ABCD-1234" maxlength="40">
+          <button type="submit" id="tebus" class="tombol putih">Buat file</button>
         </form>
-        <p id="kode-status" class="kecil" aria-live="polite"></p>
+        <p id="kode-status" class="kode-status" aria-live="polite"></p>
       </div>
 
-      <div class="baris tengah">
-        <label for="file-docx" class="tombol sekunder">Pilih file revisi</label>
-        <button type="button" id="cek-ulang" class="tombol sekunder">Cek ulang</button>
+      <div class="aksi-ulang">
+        <label for="file-docx" class="tombol garis">Pilih file revisi</label>
+        <button type="button" id="cek-ulang" class="tombol garis">Cek ulang</button>
+      </div>
+    </section>
+
+    <section id="cara" class="cara" aria-labelledby="judul-cara">
+      <h2 id="judul-cara">Cara kerja</h2>
+      <ol class="langkah">
+        <li><span class="angka">1</span><div><strong>Pilih pedoman</strong><p>Pakai pedoman umum, cari kampus Anda, atau upload PDF pedoman sendiri.</p></div></li>
+        <li><span class="angka">2</span><div><strong>Pilih file .docx</strong><p>Pemeriksaan langsung berjalan di HP atau laptop Anda.</p></div></li>
+        <li><span class="angka">3</span><div><strong>Perbaiki</strong><p>Ikuti petunjuknya sendiri, atau serahkan ke tim kami lewat WhatsApp.</p></div></li>
+      </ol>
+      <div class="fitur">
+        <div><svg aria-hidden="true"><use href="#i-kunci"/></svg><strong>Privasi terjaga</strong><p>Skripsi tidak pernah diunggah ke server.</p></div>
+        <div><svg aria-hidden="true"><use href="#i-kilat"/></svg><strong>Cepat</strong><p>Hasil keluar dalam beberapa detik.</p></div>
+        <div><svg aria-hidden="true"><use href="#i-file"/></svg><strong>25+ pemeriksaan</strong><p>Margin, huruf, spasi, judul bab, tabel, dan lainnya.</p></div>
+      </div>
+      <div class="faq">
+        <details><summary>Apakah file saya disimpan?</summary><p>Tidak. File diperiksa di browser Anda sendiri dan tidak dikirim ke mana pun. Lihat <a href="/privasi.html">kebijakan privasi</a>.</p></details>
+        <details><summary>File saya masih .doc atau PDF?</summary><p>Buka di Microsoft Word, lalu pilih File → Save As → Word Document (.docx).</p></details>
+        <details><summary>Kampus saya tidak ada di daftar?</summary><p>Buka bagian Opsional, lalu upload PDF pedoman kampus. Aturannya dibaca otomatis dalam 10 sampai 30 detik.</p></details>
       </div>
     </section>
   </main>
 
   <div id="wa-bar" class="wa-bar" hidden>
     <div class="wadah wa-isi">
-      <div>
+      <div class="wa-teks">
         <strong>Mau dirapikan tim kami?</strong>
-        <span id="wa-estimasi" class="kecil"></span>
+        <span id="wa-estimasi"></span>
       </div>
-      <a id="wa-rapikan" class="tombol wa" href="#" target="_blank" rel="noopener">Chat WhatsApp</a>
+      <a id="wa-rapikan" class="tombol wa" href="#" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-wa"/></svg>Chat WA</a>
     </div>
   </div>
 
-  <footer class="kaki wadah kecil redup">
-    <p>File skripsi diperiksa di browser Anda dan tidak pernah dikirim ke server. <a href="/privasi.html">Kebijakan privasi</a></p>
-    <p>Hasil cek otomatis bisa keliru. Tetap cocokkan dengan pedoman resmi kampus.</p>
+  <footer class="kaki">
+    <div class="wadah">
+      <p><strong>RISETWORKS</strong> · Cek format skripsi, makalah, dan artikel.</p>
+      <p>Hasil cek otomatis bisa keliru, tetap cocokkan dengan pedoman resmi kampus. <a href="/privasi.html">Kebijakan privasi</a></p>
+    </div>
   </footer>
 </body>
 </html>

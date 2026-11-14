@@ -4,7 +4,7 @@
 export const PRESET_UMUM = Object.freeze({
   id: 'umum',
   versi: 1,
-  nama: 'Pedoman umum (TNR 12, spasi 1,5, margin 4-4-3-3)',
+  nama: 'Pedoman umum',
   kampus: '',
   singkatan: '',
   fakultas: '',
