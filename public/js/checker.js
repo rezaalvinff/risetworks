@@ -255,6 +255,23 @@ const RE_TABEL = /^\s*Tabel\s+\d+([.\-]\d+)*\b/i;
 const RE_GAMBAR = /^\s*(Gambar|Grafik|Bagan|Diagram)\s+\d+([.\-]\d+)*\b/i;
 const RE_TOC_BARIS = /(\.{4,}|…{2,}|\t\s*[\divxlc]+\s*$)/i;
 
+// ---------- skor ----------
+
+/** Hitung skor 0-100 dari daftar temuan, sekaligus mengurutkan temuan dari yang paling berat. */
+export function nilaiSkor(temuan) {
+  const BOBOT = { berat: 10, sedang: 6, ringan: 3 };
+  let potongSkor = 0;
+  for (const t of temuan) {
+    let faktor = 1;
+    if (t.dari) faktor = 0.5 + 0.5 * Math.min(1, (t.jumlah / t.dari) * 4);
+    t.bobot = Math.round(BOBOT[t.tingkat] * faktor * 10) / 10;
+    potongSkor += t.bobot;
+  }
+  const URUT = { berat: 0, sedang: 1, ringan: 2 };
+  temuan.sort((a, b) => URUT[a.tingkat] - URUT[b.tingkat] || b.bobot - a.bobot);
+  return Math.max(0, Math.round(100 - potongSkor));
+}
+
 // ---------- pemeriksaan utama ----------
 
 /**
@@ -845,27 +862,43 @@ export async function periksaDocx(buffer, aturan, deps = {}) {
   });
 
   // --- skor ---
-  const BOBOT = { berat: 10, sedang: 6, ringan: 3 };
-  let potongSkor = 0;
   for (const t of temuan) {
     t.jumlah = t.paragraf.length;
-    let faktor = 1;
-    if (t.dari) faktor = 0.5 + 0.5 * Math.min(1, (t.jumlah / t.dari) * 4);
-    t.bobot = Math.round(BOBOT[t.tingkat] * faktor * 10) / 10;
-    potongSkor += t.bobot;
     t.contoh = t.paragraf.slice(0, 5).map((i) => ({ i, teks: potong(PAR[i].teks || '(baris kosong)'), halaman: PAR[i].halaman }));
   }
-  const URUT = { berat: 0, sedang: 1, ringan: 2 };
-  temuan.sort((a, b) => URUT[a.tingkat] - URUT[b.tingkat] || b.bobot - a.bobot);
-  const skor = Math.max(0, Math.round(100 - potongSkor));
+  const skor = nilaiSkor(temuan);
 
   const jumlahKata = isi.reduce((n, p) => n + p.kata, 0);
   const halamanTerakhir = PAR.length ? PAR[PAR.length - 1].halaman : 1;
   const estimasiHalaman = Math.max(halamanTerakhir, Math.ceil(utama.reduce((n, p) => n + p.kata, 0) / ((aturan.spasi || 1.5) >= 1.5 ? 280 : 450)));
 
+  // --- nilai terukur untuk tabel perbandingan ---
+  const dominan = (arr) => { const m = new Map(); for (const [k, n] of arr) m.set(k, (m.get(k) || 0) + n); return [...m.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null; };
+  const sectUtama = sects[sects.length - 1];
+  const pgSz = anak(sectUtama, 'pgSz');
+  const pgMar = anak(sectUtama, 'pgMar');
+  const cmDari = (el, tag, tambahan = 0) => (el ? Math.round(((Math.abs(parseInt(atr(el, tag) || '0', 10)) + tambahan) / TWIP_PER_CM) * 100) / 100 : null);
+  const wCm = pgSz ? parseInt(atr(pgSz, 'w') || '0', 10) / TWIP_PER_CM : 0;
+  const hCm = pgSz ? parseInt(atr(pgSz, 'h') || '0', 10) / TWIP_PER_CM : 0;
+  const prosaProp = prosa.map((p) => propPar(p));
+  const ukur = {
+    kertas: pgSz ? (namaKertas(Math.min(wCm, hCm), Math.max(wCm, hCm)) || `${fmt(Math.min(wCm, hCm))} × ${fmt(Math.max(wCm, hCm))} cm`) : null,
+    margin: { atas: cmDari(pgMar, 'top'), bawah: cmDari(pgMar, 'bottom'), kiri: cmDari(pgMar, 'left', pgMar ? parseInt(atr(pgMar, 'gutter') || '0', 10) : 0), kanan: cmDari(pgMar, 'right') },
+    font: dominan(teksBerhuruf.flatMap((p) => [...propPar(p).chars.font.entries()])),
+    ukuran: dominan(ukuranDicek.flatMap((p) => [...propPar(p).chars.ukuran.entries()])),
+    spasi: dominan(prosaProp.map((x) => [x.spasi, 1])),
+    rataPersen: prosaProp.length ? Math.round((prosaProp.filter((x) => ['both', 'distribute'].includes(x.jc)).length / prosaProp.length) * 100) : null,
+    indent: dominan(prosa.filter((p) => !p.daftar).map((p) => [Math.round(propPar(p).indentCm * 100) / 100, 1])),
+    jarak: dominan(prosaProp.map((x) => [Math.max(x.before, x.after), 1])),
+    nomorHalaman: !temuan.some((t) => t.id === 'nomor-halaman'),
+    judulBab: judulBab.length,
+  };
+
   return {
+    jenis: 'docx',
     skor,
     temuan,
+    ukur,
     mode: modeSkripsi ? 'skripsi' : 'artikel',
     statistik: {
       paragraf: utama.filter((p) => p.teks).length,
